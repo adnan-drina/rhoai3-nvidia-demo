@@ -4,5 +4,6 @@ metadata:
   name: demo-sandbox
   labels:
     opendatahub.io/dashboard: "true"
+    kueue.openshift.io/managed: "true"
   annotations:
     argocd.argoproj.io/sync-wave: "6"
