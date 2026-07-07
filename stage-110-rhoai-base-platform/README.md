@@ -27,6 +27,21 @@ OpenShift Cluster
 └── demo-sandbox
 ```
 
+## Deployment Model
+
+- `deploy.sh` bootstraps the one layer ArgoCD cannot manage for itself:
+  the OpenShift GitOps operator, the ArgoCD instance
+  (`resourceTrackingMethod: annotation`), the `rhoai-nvidia-demo`
+  AppProject, and the controller cluster-admin binding (demo-only,
+  documented in `docs/OPERATIONS.md`).
+- Everything else is delivered by the `stage-110-rhoai-base-platform`
+  ArgoCD Application syncing `gitops/stage-110-rhoai-base-platform/` from
+  Git: ODF operator (`stable-4.20`), RHOAI operator pinned to the
+  `stable-3.4` channel, then the verified instance CRs (standalone MCG
+  StorageCluster, DSCInitialization, DataScienceCluster, Model Registry).
+- KServe serving configuration arrives in Stage 210 and Kueue in Stage 120;
+  this stage keeps those components at their defaults.
+
 ## Official Documentation
 
 - [Installing OpenShift AI Self-Managed](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.4/html/installing_and_uninstalling_openshift_ai_self-managed)

@@ -7,7 +7,9 @@ spec:
   project: rhoai-nvidia-demo
   source:
     repoURL: https://github.com/adnan-drina/rhoai3-nvidia-demo.git
-    targetRevision: main
+    # Temporarily pinned to the active stage-110 branch per AGENTS.md
+    # branching policy; restore to main when the stage stabilizes.
+    targetRevision: feat/stage-110
     path: gitops/stage-110-rhoai-base-platform
   destination:
     server: https://kubernetes.default.svc
@@ -15,3 +17,9 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 15s
+        factor: 2
+        maxDuration: 3m

@@ -57,6 +57,27 @@ runs gpt-oss-120b on a community-supported Marlin fallback kernel.
   (launched in us-east-1/2, us-west-2, London, Mumbai, Sydney, Tokyo,
   Sao Paulo); EC2 Capacity Block is the fallback for demo day
 - Request "Running On-Demand P instances" quota >= 32 vCPUs
+- Risk stance (2026-07-07, user accepted): capacity/quota in the active
+  sandbox (single-AZ us-east-2c, no AWS-account access from the repo) is
+  verified empirically — launch a temporary 1-replica p5.4xlarge probe
+  MachineSet cloned from the worker MachineSet, read the Machine
+  provisioning result (quota/capacity errors surface on the Machine object
+  within ~2 minutes), then delete the probe MachineSet immediately
+- Probe results (2026-07-07, cluster-48jqq, us-east-2): P-instance quota is
+  sufficient (AWS attempted placement; no VcpuLimitExceeded). us-east-2c had
+  no p5.4xlarge capacity (`InsufficientInstanceCapacity`; AWS pointed to
+  us-east-2a/2b). The sandbox VPC has NO subnets in 2a/2b ("no subnet IDs
+  were found").
+- Capacity strategy (2026-07-07, user decision): do NOT add subnets in other
+  AZs. Keep GPU MachineSets in us-east-2c and rely on the Machine API
+  retry-until-capacity behavior (`InsufficientInstanceCapacity` is transient;
+  the controller retries every few seconds and provisions when capacity
+  appears). Deploy GPU MachineSets as early as possible ahead of demo day to
+  maximize the capacity window. Fallback if 2c capacity never materializes:
+  provision a fresh environment in another region. Note: p5.4xlarge region
+  support for eu-central-1/eu-west-1 is unconfirmed (launch regions include
+  London eu-west-2, us-east-1/2, us-west-2, Mumbai, Sydney, Tokyo, Sao
+  Paulo); verify instance-type offerings before choosing the fallback region
 
 ## Dependencies
 

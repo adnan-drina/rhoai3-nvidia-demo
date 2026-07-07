@@ -1,5 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Components will be added as Stage 110 is implemented
-resources: []
+# Instance CRs (StorageCluster, DSCInitialization, DataScienceCluster,
+# ModelRegistry) are added after live CRD verification per PLAN.md.
+resources:
+  - odf-mcg/operator/base
+  - rhoai/operator/base
