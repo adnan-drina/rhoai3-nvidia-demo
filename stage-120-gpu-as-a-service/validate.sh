@@ -91,6 +91,12 @@ check "Hardware profiles exist (h100-full, mig-3g-40gb, mig-2g-20gb)" bash -c \
 check "DSC kueue component Unmanaged" \
     check_eq "Unmanaged" oc get datasciencecluster default-dsc -o jsonpath='{.spec.components.kueue.managementState}'
 
+# Workload observability (RHOAI Workload metrics page data path)
+check "User Workload Monitoring prometheus running" bash -c \
+    "oc get pods -n openshift-user-workload-monitoring --no-headers | grep prometheus-user-workload | grep -q ' Running'"
+check "Kueue metrics ServiceMonitor exists" \
+    oc get servicemonitor kueue-metrics -n openshift-kueue-operator
+
 # GPU node checks (only pass once capacity arrives)
 gpu_nodes=$(oc get nodes -l node-role.kubernetes.io/gpu -o name 2>/dev/null | wc -l | tr -d ' ')
 if [[ "$gpu_nodes" -ge 1 ]]; then

@@ -1,0 +1,12 @@
+# Enables OpenShift User Workload Monitoring: required for the RHOAI
+# "Workload metrics" page (scrapes the Red Hat build of Kueue
+# kueue-metrics ServiceMonitor) and for Stage 210 vLLM ServiceMonitors.
+# The ConfigMap did not previously exist on the cluster, so Git owns it.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+data:
+  config.yaml: |
+    enableUserWorkload: true

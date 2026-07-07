@@ -11,3 +11,4 @@ resources:
   - kueue/operator/base
   - kueue/instance/base
   - rhoai/hardware-profiles/base
+  - monitoring/base
