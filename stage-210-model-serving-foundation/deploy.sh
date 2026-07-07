@@ -58,6 +58,13 @@ wait_until "cert-manager CSV Succeeded" 900 bash -c \
     "oc get csv -n cert-manager-operator --no-headers 2>/dev/null | grep cert-manager-operator | grep -q Succeeded"
 wait_until "RHCL operator CSV Succeeded (pinned v1.3.4)" 1500 bash -c \
     "oc get csv -n openshift-operators -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhcl-operator\..*=Succeeded'"
+# Known ordering effect of the combined pinned InstallPlan: the Kuadrant
+# operator can start before its dependency operators register and caches
+# that state; the CR's own message prescribes an operator restart.
+if oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].message}' 2>/dev/null | grep -q "not installed"; then
+    echo "Kuadrant cached missing dependencies; restarting its operator (per CR message)"
+    oc rollout restart deployment/kuadrant-operator-controller-manager -n openshift-operators
+fi
 wait_until "Kuadrant CR Ready" 900 \
     check_eq "True" oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
 wait_until "maas-default-gateway Programmed" 600 \
