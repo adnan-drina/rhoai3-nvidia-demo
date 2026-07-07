@@ -1,26 +1,27 @@
 # Agent Guidance
 
-This directory contains tool-neutral shared agent guidance.
+This directory contains tool-neutral shared agent guidance. It is the single
+source of truth for rules, skills, hooks, and references — regardless of which
+AI coding tool is used.
 
 ## Layout
 
 | Path | Purpose |
 |------|---------|
-| `hooks/` | Shared reusable hook implementations |
+| `hooks/` | Shared hook implementations (cluster guard, YAML validation, docs consistency) |
 | `rules/*.md` | Short tool-neutral domain rules |
 | `skills/*/SKILL.md` | Canonical shared skills following the Agent Skills layout |
 
-Keep tool-specific hooks, settings, and subagents in their native directories
-only when the tool requires that format.
+## Tool-Agnostic Design
 
-## Tool-Specific Directories
+All agent guidance lives here. Tool-specific configuration is minimized:
 
-- `.claude/` should contain only `CLAUDE.md`. Keep local Claude settings in
-  personal configuration, not the repo.
-- `.codex/` should contain only hook configuration or compatibility wrappers
-  that call shared hook implementations.
-- `.cursor/` should contain only Cursor hook configuration and Cursor-specific
-  hook scripts that cannot be shared.
-- `.cursor/` should not contain shared rules, skills, agents, or worktree
-  state. Keep those tool-specific artifacts local unless the team agrees to
-  track a reviewed bridge.
+- **Cursor**: `.cursor/hooks.json` wires hooks from `.agents/hooks/`. This is
+  the only tracked tool-specific file because Cursor requires this path.
+- **Claude Code**: Reads `AGENTS.md` at the repo root natively.
+- **Codex**: Reads `AGENTS.md` and discovers `.agents/skills/` natively.
+- **Other tools**: Point to `AGENTS.md` and `.agents/` as needed.
+
+No tool-specific rules, skills, or duplicated guidance should exist outside
+this directory. If a tool requires a bridge file, keep it minimal and point
+back here.

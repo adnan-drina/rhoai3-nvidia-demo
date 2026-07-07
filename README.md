@@ -27,7 +27,8 @@ using NVIDIA NIM microservices and agent frameworks for the agentic AI tier.
 
 - `stage-310-nvidia-nim-agents/` - NVIDIA NIM microservices for agentic AI workloads
 - `stage-320-multi-agent-research/` - Multi-agent research workflow orchestration
-- `stage-330-agent-evaluation/` - Agent workflow evaluation and observability
+
+Agent evaluation is tracked as future work in `docs/BACKLOG.md`.
 
 ## Project Structure
 

@@ -13,7 +13,6 @@ Stages must be deployed in numerical order:
 4. Stage 220 - Models as a Service (MaaS governance)
 5. Stage 310 - NVIDIA NIM Agents (NIM microservices)
 6. Stage 320 - Multi-Agent Research (agent orchestration)
-7. Stage 330 - Agent Evaluation (evaluation and observability)
 
 ## Validation Strategy
 

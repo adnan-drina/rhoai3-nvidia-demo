@@ -18,8 +18,7 @@ gitops/
 ├── stage-210-model-serving-foundation/
 ├── stage-220-models-as-a-service/
 ├── stage-310-nvidia-nim-agents/
-├── stage-320-multi-agent-research/
-└── stage-330-agent-evaluation/
+└── stage-320-multi-agent-research/
 ```
 
 ## Conventions

@@ -28,7 +28,6 @@ stage-210-model-serving-foundation/ # KServe model serving foundation via shared
 stage-220-models-as-a-service/    # MaaS governance, local and external model access
 stage-310-nvidia-nim-agents/      # NVIDIA NIM microservices for agentic AI workloads
 stage-320-multi-agent-research/   # Multi-agent research workflow orchestration
-stage-330-agent-evaluation/       # Agent workflow evaluation and observability
 gitops/                            # Active GitOps source tree
 scripts/                           # Shared project automation
 docs/                              # Active project docs and product baseline
@@ -57,7 +56,7 @@ docs/                              # Active project docs and product baseline
 
 ## OpenShift Safety Guard
 
-- Open this repository as its own Codex project; do not open
+- Open this repository as its own project; do not open
   `/Users/adrina/Sandbox` as the active project for live cluster work.
 - Before running live `oc`/`kubectl` commands, verify the target cluster against
   the repo-local environment guard.

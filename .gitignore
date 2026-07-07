@@ -18,22 +18,16 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Tool-specific local state; keep only reviewed repo bridges
+# Tool-specific local state
+# .cursor/hooks.json is the only tracked tool-specific file (Cursor requires
+# this path). All shared hooks, rules, and skills live in .agents/.
 .cursor/**
 !.cursor/
 !.cursor/hooks.json
-!.cursor/hooks/
-!.cursor/hooks/**
 
-.codex/**
-!.codex/
-!.codex/hooks.json
-!.codex/hooks/
-!.codex/hooks/**
-
-.claude/**
-!.claude/
-!.claude/CLAUDE.md
+# Ignore other tool-specific directories entirely
+.claude/
+.codex/
 /CLAUDE.md
 
 # Runtime and generated artifacts
