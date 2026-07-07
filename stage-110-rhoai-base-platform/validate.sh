@@ -68,8 +68,13 @@ check "RHOAI operator CSV Succeeded (stable-3.4 channel)" bash -c \
     "oc get csv -n redhat-ods-operator -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhods-operator\..*=Succeeded'"
 check "DSCInitialization Ready" bash -c \
     "oc get dscinitialization -o jsonpath='{.items[0].status.phase}' | grep -x Ready"
-check "DataScienceCluster Ready" bash -c \
-    "oc get datasciencecluster -o jsonpath='{.items[0].status.phase}' | grep -x Ready"
+# The DSC overlay composes later-stage component toggles (kueue: Stage 120,
+# modelsAsService: Stage 220), so overall DSC Ready converges only after
+# those stages deploy. Stage 110 gates on ITS components only.
+for comp in DashboardReady WorkbenchesReady ModelRegistryReady; do
+    check "DSC $comp" bash -c \
+        "oc get datasciencecluster default-dsc -o jsonpath='{.status.conditions[?(@.type==\"'$comp'\")].status}' | grep -x True"
+done
 check "RHOAI dashboard route exists" bash -c \
     "oc get route -n redhat-ods-applications -o name | grep -q ."
 

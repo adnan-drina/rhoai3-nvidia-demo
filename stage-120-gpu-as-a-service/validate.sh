@@ -88,6 +88,8 @@ check "ClusterQueue exists" bash -c \
     "oc get clusterqueue -o name | grep -q ."
 check "Hardware profiles exist (h100-full, mig-3g-40gb, mig-2g-20gb)" bash -c \
     "oc get hardwareprofile h100-full mig-3g-40gb mig-2g-20gb -n redhat-ods-applications -o name | grep -c hardwareprofile | grep -x 3"
+check "DSC KueueReady (RHOAI recognizes external Kueue)" \
+    check_eq "True" oc get datasciencecluster default-dsc -o jsonpath='{.status.conditions[?(@.type=="KueueReady")].status}'
 check "DSC kueue component Unmanaged" \
     check_eq "Unmanaged" oc get datasciencecluster default-dsc -o jsonpath='{.spec.components.kueue.managementState}'
 
