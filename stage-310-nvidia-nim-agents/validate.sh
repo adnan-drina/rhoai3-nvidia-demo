@@ -47,10 +47,10 @@ check "nvidia-api-credentials secret present" \
     oc get secret nvidia-api-credentials -n "$MAAS_NS"
 check "4 ExternalModels present" bash -c \
     "oc get externalmodels.maas.opendatahub.io -n $MAAS_NS --no-headers | wc -l | grep -Eq '^ *4$'"
-check "4 hosted MaaSModelRefs present" bash -c \
-    "oc get maasmodelrefs.maas.opendatahub.io -n $MAAS_NS --no-headers | wc -l | grep -Eq '^ *4$'"
-check "3 local MaaSModelRefs present (demo-sandbox)" bash -c \
-    "oc get maasmodelrefs.maas.opendatahub.io -n demo-sandbox --no-headers | wc -l | grep -Eq '^ *3$'"
+check "4 hosted MaaSModelRefs (kind ExternalModel)" bash -c \
+    "oc get maasmodelrefs.maas.opendatahub.io -n $MAAS_NS -o jsonpath='{range .items[*]}{.spec.modelRef.kind}{\"\n\"}{end}' | grep -c ExternalModel | grep -xq 4"
+check "3 local MaaSModelRefs (kind LLMInferenceService)" bash -c \
+    "oc get maasmodelrefs.maas.opendatahub.io -n $MAAS_NS -o jsonpath='{range .items[*]}{.spec.modelRef.kind}{\"\n\"}{end}' | grep -c LLMInferenceService | grep -xq 3"
 check "2 MaaSSubscriptions present" bash -c \
     "oc get maassubscriptions.maas.opendatahub.io -n $MAAS_NS --no-headers | wc -l | grep -Eq '^ *2$'"
 check "2 MaaSAuthPolicies present" bash -c \
