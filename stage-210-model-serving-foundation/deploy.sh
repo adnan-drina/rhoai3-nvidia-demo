@@ -59,6 +59,6 @@ wait_until "DSC KserveReady" 900 \
     check_eq "True" oc get datasciencecluster default-dsc -o jsonpath='{.status.conditions[?(@.type=="KserveReady")].status}'
 
 echo "--- InferenceServices created (readiness requires GPU capacity)"
-oc get inferenceservice -n demo-sandbox
+oc get llminferenceservices.serving.kserve.io -n models-as-a-service 2>/dev/null || true
 
 echo "=== Stage 210 deploy complete. Model pods start when GPU nodes join; run validate.sh for status. ==="
