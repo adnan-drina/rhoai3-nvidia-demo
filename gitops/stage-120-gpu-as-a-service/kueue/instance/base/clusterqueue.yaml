@@ -26,14 +26,14 @@ spec:
         - name: default-flavor
           resources:
             - name: cpu
-              nominalQuota: 64
+              nominalQuota: "64"
             - name: memory
               nominalQuota: 512Gi
             - name: nvidia.com/gpu
-              nominalQuota: 1
+              nominalQuota: "1"
             - name: nvidia.com/mig-3g.40gb
-              nominalQuota: 1
+              nominalQuota: "1"
             - name: nvidia.com/mig-2g.20gb
-              nominalQuota: 1
+              nominalQuota: "1"
             - name: nvidia.com/mig-1g.10gb
-              nominalQuota: 2
+              nominalQuota: "2"
