@@ -25,8 +25,13 @@ spec:
       managementState: Removed
     kserve:
       managementState: Removed
+    # Stage 120: Unmanaged delegates to the Red Hat build of Kueue operator
+    # (Managed is rejected at runtime in RHOAI 3.4); queue names match the
+    # ClusterQueue/LocalQueue authored in gitops/stage-120-gpu-as-a-service.
     kueue:
-      managementState: Removed
+      managementState: Unmanaged
+      defaultClusterQueueName: default
+      defaultLocalQueueName: default
     llamastackoperator:
       managementState: Removed
     mlflowoperator:

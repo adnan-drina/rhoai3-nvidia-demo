@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - h100-full.yaml
+  - mig-3g-40gb.yaml
+  - mig-2g-20gb.yaml
+  - mig-1g-10gb.yaml

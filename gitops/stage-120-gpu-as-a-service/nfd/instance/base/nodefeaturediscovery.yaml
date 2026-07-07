@@ -1,0 +1,13 @@
+# From nfd operator alm-examples (trimmed to defaults we rely on).
+apiVersion: nfd.openshift.io/v1
+kind: NodeFeatureDiscovery
+metadata:
+  name: nfd-instance
+  namespace: openshift-nfd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  operand:
+    imagePullPolicy: IfNotPresent
+    servicePort: 12000

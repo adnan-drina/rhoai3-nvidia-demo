@@ -1,0 +1,35 @@
+# Covers the Stage 120 GPU layout: 1x full H100 (gpu-full node) plus the
+# all-balanced MIG slices on the gpu-mig node (1x 3g.40gb, 1x 2g.20gb,
+# 2x 1g.10gb). Named "default" to match the DSC kueue default queue name.
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ClusterQueue
+metadata:
+  name: default
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  namespaceSelector: {}
+  resourceGroups:
+    - coveredResources:
+        - cpu
+        - memory
+        - nvidia.com/gpu
+        - nvidia.com/mig-3g.40gb
+        - nvidia.com/mig-2g.20gb
+        - nvidia.com/mig-1g.10gb
+      flavors:
+        - name: default-flavor
+          resources:
+            - name: cpu
+              nominalQuota: 64
+            - name: memory
+              nominalQuota: 512Gi
+            - name: nvidia.com/gpu
+              nominalQuota: 1
+            - name: nvidia.com/mig-3g.40gb
+              nominalQuota: 1
+            - name: nvidia.com/mig-2g.20gb
+              nominalQuota: 1
+            - name: nvidia.com/mig-1g.10gb
+              nominalQuota: 2

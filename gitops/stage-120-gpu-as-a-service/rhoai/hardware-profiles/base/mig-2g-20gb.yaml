@@ -1,0 +1,36 @@
+# Schema verified against live hardwareprofiles.infrastructure.opendatahub.io
+# v1alpha1 CRD (cluster-48jqq, RHOAI 3.4.2).
+apiVersion: infrastructure.opendatahub.io/v1alpha1
+kind: HardwareProfile
+metadata:
+  name: mig-2g-20gb
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    opendatahub.io/display-name: "NVIDIA H100 MIG 2g.20gb"
+    opendatahub.io/description: "20GB MIG slice on the gpu-mig node - Nemotron Mini 4B"
+spec:
+  identifiers:
+    - displayName: CPU
+      identifier: cpu
+      resourceType: CPU
+      minCount: 1
+      maxCount: 12
+      defaultCount: 4
+    - displayName: Memory
+      identifier: memory
+      resourceType: Memory
+      minCount: 2Gi
+      maxCount: 128Gi
+      defaultCount: 16Gi
+    - displayName: "NVIDIA H100 MIG 2g.20gb"
+      identifier: nvidia.com/mig-2g.20gb
+      resourceType: Accelerator
+      minCount: 1
+      maxCount: 1
+      defaultCount: 1
+  scheduling:
+    type: Queue
+    kueue:
+      localQueueName: default

@@ -1,0 +1,36 @@
+# Schema verified against live hardwareprofiles.infrastructure.opendatahub.io
+# v1alpha1 CRD (cluster-48jqq, RHOAI 3.4.2).
+apiVersion: infrastructure.opendatahub.io/v1alpha1
+kind: HardwareProfile
+metadata:
+  name: h100-full
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    opendatahub.io/display-name: "NVIDIA H100 80GB (full GPU)"
+    opendatahub.io/description: "Full H100 on the gpu-full node - gpt-oss-120b orchestrator"
+spec:
+  identifiers:
+    - displayName: CPU
+      identifier: cpu
+      resourceType: CPU
+      minCount: 1
+      maxCount: 12
+      defaultCount: 8
+    - displayName: Memory
+      identifier: memory
+      resourceType: Memory
+      minCount: 2Gi
+      maxCount: 128Gi
+      defaultCount: 64Gi
+    - displayName: "NVIDIA H100 80GB (full GPU)"
+      identifier: nvidia.com/gpu
+      resourceType: Accelerator
+      minCount: 1
+      maxCount: 1
+      defaultCount: 1
+  scheduling:
+    type: Queue
+    kueue:
+      localQueueName: default
