@@ -1,0 +1,13 @@
+# Persona workbench Data Science Project (base platform scope: the demo
+# personas and their RBAC live in stage 110). The kueue opt-in label is
+# consumed by stage 120 once the Red Hat build of Kueue is installed;
+# it is inert until then.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo-sandbox
+  labels:
+    opendatahub.io/dashboard: "true"
+    kueue.openshift.io/managed: "true"
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"

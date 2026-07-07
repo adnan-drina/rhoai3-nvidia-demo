@@ -5,6 +5,5 @@ resources:
   - kueue.yaml
   - resourceflavor.yaml
   - clusterqueue.yaml
-  - demo-namespace.yaml
   - localqueue.yaml
   - localqueue-maas.yaml
