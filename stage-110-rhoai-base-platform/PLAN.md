@@ -9,22 +9,23 @@ channel (verified present in the cluster catalog).
 
 ## Components
 
-- [ ] GitOps bootstrap (script-applied, the one non-ArgoCD-managed layer):
+- [x] GitOps bootstrap (script-applied, the one non-ArgoCD-managed layer):
       OpenShift GitOps operator Subscription, ArgoCD instance with
       `resourceTrackingMethod: annotation`, AppProject `rhoai-nvidia-demo`,
       application-controller cluster-admin ClusterRoleBinding (documented in
       `docs/OPERATIONS.md`)
-- [ ] Stage 110 ArgoCD Application (app-of-apps entry) syncing
+- [x] Stage 110 ArgoCD Application (app-of-apps entry) syncing
       `gitops/stage-110-rhoai-base-platform/`
-- [ ] ODF MCG: `openshift-storage` namespace, OperatorGroup, `odf-operator`
+- [x] ODF MCG: `openshift-storage` namespace, OperatorGroup, `odf-operator`
       Subscription (`stable-4.20`); standalone Multicloud Object Gateway
       StorageCluster (NooBaa + default backing store on AWS)
-- [ ] RHOAI: `redhat-ods-operator` namespace, OperatorGroup,
-      `rhods-operator` Subscription (channel `stable-3.4`);
-      DSCInitialization; DataScienceCluster with dashboard, workbenches, and
+- [x] RHOAI: `redhat-ods-operator` namespace, OperatorGroup,
+      `rhods-operator` Subscription (channel `stable-3.4`, installed CSV
+      rhods-operator.3.4.2); DSCInitialization auto-created by the operator
+      (not authored); DataScienceCluster v2 with dashboard, workbenches, and
       model registry managed — serving (KServe) is configured in Stage 210,
       Kueue in Stage 120
-- [ ] Model Registry: registries namespace and ModelRegistry instance backed
+- [x] Model Registry: registries namespace and ModelRegistry instance backed
       by an in-cluster MySQL (DB secret created by `deploy.sh`, never
       committed)
 - [ ] Demo access (`setup-access.sh`): htpasswd identity provider with
