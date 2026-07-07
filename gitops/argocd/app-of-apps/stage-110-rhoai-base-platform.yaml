@@ -7,9 +7,10 @@ spec:
   project: rhoai-nvidia-demo
   source:
     repoURL: https://github.com/adnan-drina/rhoai3-nvidia-demo.git
-    # Temporarily pinned to the active stage-110 branch per AGENTS.md
-    # branching policy; restore to main when the stage stabilizes.
-    targetRevision: feat/stage-110
+    # Temporarily pinned to the active dev branch per AGENTS.md branching
+    # policy (stage-120 patches the shared DSC owned here); restore to main
+    # when stabilizing.
+    targetRevision: feat/stage-120
     path: gitops/stage-110-rhoai-base-platform
   destination:
     server: https://kubernetes.default.svc
