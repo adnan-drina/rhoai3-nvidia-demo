@@ -15,6 +15,12 @@ spec:
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
+    syncOptions:
+      # ignoreDifferences alone only masks drift detection; applies must
+      # also respect it or stage-110 syncs stomp later-stage DSC
+      # activations back to Removed (root cause of the 2026-07-08 MaaS
+      # teardown).
+      - RespectIgnoreDifferences=true
     automated:
       prune: true
       selfHeal: true
