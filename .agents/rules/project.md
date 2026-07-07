@@ -56,3 +56,12 @@ and show the architecture delta. GitOps artifacts and live demos show the How.
 Do not use this rule as the source of truth for specific RHOAI API fields or
 live cluster operations. Use the `rhoai` or `env` rule and matching skills for
 those domains.
+
+Additional documentation-alignment and operator-GitOps skills ported
+from the proven rhoai3-demo project:
+
+- `.agents/skills/project-doc-alignment-audit/SKILL.md`
+- `.agents/skills/project-red-hat-doc-alignment-review/SKILL.md`
+- `.agents/skills/project-red-hat-doc-skill-authoring/SKILL.md`
+- `.agents/skills/project-red-hat-operator-gitops/SKILL.md`
+- `.agents/skills/project-rhoai-doc-chapter-skill-authoring/SKILL.md`

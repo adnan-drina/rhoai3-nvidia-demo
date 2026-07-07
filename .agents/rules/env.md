@@ -22,6 +22,7 @@ demo environments:
 - `.agents/skills/env-deploy-and-evaluate/SKILL.md`
 - `.agents/skills/env-troubleshoot/SKILL.md`
 - `.agents/skills/env-manage-resources/SKILL.md`
+- `.agents/skills/env-validate-demo-flow/SKILL.md`
 
 No active bootstrap, deploy, validate, or resource-management scripts exist
 until they are introduced under `scripts/` or root-level `stage-YXX-slug/`
