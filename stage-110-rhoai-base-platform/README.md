@@ -42,6 +42,34 @@ OpenShift Cluster
 - KServe serving configuration arrives in Stage 210 and Kueue in Stage 120;
   this stage keeps those components at their defaults.
 
+## Deployed State
+
+Once fully deployed, the stage delivers a healthy GitOps-managed foundation
+with all operators reconciled and instance CRs ready.
+
+### ArgoCD Application — Synced & Healthy
+
+The single `stage-110-rhoai-base-platform` Application manages all platform
+resources from Git. Auto-sync is enabled; any drift is self-healed.
+
+![ArgoCD Application showing Healthy / Synced status](../docs/assets/demos/stage-110/argocd-app-synced.png)
+
+### Red Hat OpenShift AI Dashboard
+
+The RHOAI Dashboard is accessible to demo users (`ai-admin`, `ai-developer`,
+`ai-researcher`) via the htpasswd identity provider configured by
+`setup-access.sh`. Admin users see project management, learning resources,
+and platform settings.
+
+![RHOAI Dashboard home page logged in as ai-admin](../docs/assets/demos/stage-110/rhoai-dashboard.png)
+
+### Model Registry — Available
+
+The `demo-registry` Model Registry instance is backed by an in-cluster MySQL
+database and reports Available status in the RHOAI Dashboard settings.
+
+![Model Registry settings showing demo-registry Available](../docs/assets/demos/stage-110/model-registry-available.png)
+
 ## Official Documentation
 
 - [Installing OpenShift AI Self-Managed](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.4/html/installing_and_uninstalling_openshift_ai_self-managed)
