@@ -1,0 +1,30 @@
+# Required by RHOAI 3.4 MaaS: Gateway named maas-default-gateway in
+# openshift-ingress (DSC condition: "the specified Gateway must exist before
+# enabling MaaS platform reconcile"). Reuses the RHOAI-created
+# data-science-gateway-class (openshift.io/gateway-controller/v1, Accepted)
+# and mirrors the data-science-gateway TLS pattern: OpenShift service-CA
+# serving cert injected via the generated Service's serving-cert annotation.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: maas-default-gateway
+  namespace: openshift-ingress
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  gatewayClassName: data-science-gateway-class
+  infrastructure:
+    annotations:
+      service.beta.openshift.io/serving-cert-secret-name: maas-default-gateway-service-tls
+  listeners:
+    - name: https
+      port: 443
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: maas-default-gateway-service-tls

@@ -1,8 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Kuadrant CR, MaaS gateway, and tier resources are added after live CRD
-# verification per PLAN.md. The DSC modelsAsService enablement lives in
-# stage-110's DSC overlay (CoP component patch components/maas).
+# The maas-default-gateway Gateway and its self-signed TLS secret are
+# created by deploy.sh (cluster-specific hostname/cert), mirroring the
+# MachineSet precedent. DSC modelsAsService enablement lives in stage-110's
+# DSC overlay (CoP component patch components/maas).
 resources:
   - rhcl/operator/base
+  - rhcl/instance/base
+  - gateway/base
