@@ -1,0 +1,20 @@
+# Persona split (user requirement 2026-07-07): ai-admin administers the
+# models-as-a-service project (subscriptions, external models, credentials
+# -> direct internal+external model access); ai-developer/ai-researcher get
+# NO access here - they consume models only through the governed MaaS page
+# and API keys.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rhoai-demo-admins-admin
+  namespace: models-as-a-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: rhoai-demo-admins

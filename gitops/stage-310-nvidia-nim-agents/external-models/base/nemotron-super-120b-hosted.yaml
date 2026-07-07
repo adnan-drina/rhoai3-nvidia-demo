@@ -1,0 +1,28 @@
+apiVersion: maas.opendatahub.io/v1alpha1
+kind: ExternalModel
+metadata:
+  name: nemotron-super-120b-hosted
+  namespace: models-as-a-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    openshift.io/display-name: "Nemotron 3 Super 120B (NVIDIA API Catalog, premium)"
+spec:
+  provider: openai
+  endpoint: integrate.api.nvidia.com
+  targetModel: nvidia/nemotron-3-super-120b-a12b
+  credentialRef:
+    name: nvidia-api-credentials
+---
+apiVersion: maas.opendatahub.io/v1alpha1
+kind: MaaSModelRef
+metadata:
+  name: nemotron-super-120b-hosted
+  namespace: models-as-a-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  modelRef:
+    kind: ExternalModel
+    name: nemotron-super-120b-hosted

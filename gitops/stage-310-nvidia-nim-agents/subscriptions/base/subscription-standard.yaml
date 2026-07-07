@@ -1,0 +1,36 @@
+apiVersion: maas.opendatahub.io/v1alpha1
+kind: MaaSSubscription
+metadata:
+  name: demo-standard
+  namespace: models-as-a-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    openshift.io/display-name: "Demo Standard (researchers and developers)"
+spec:
+  priority: 10
+  owner:
+    groups:
+      - name: system:authenticated
+    users: []
+  modelRefs:
+    - name: nemotron-nano-30b-hosted
+      namespace: models-as-a-service
+      tokenRateLimits:
+        - limit: 100000
+          window: 1m
+    - name: nemotron-mini-4b-hosted
+      namespace: models-as-a-service
+      tokenRateLimits:
+        - limit: 100000
+          window: 1m
+    - name: nemotron-nano-30b
+      namespace: demo-sandbox
+      tokenRateLimits:
+        - limit: 100000
+          window: 1m
+    - name: nemotron-mini-4b
+      namespace: demo-sandbox
+      tokenRateLimits:
+        - limit: 100000
+          window: 1m

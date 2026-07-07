@@ -11,3 +11,4 @@ resources:
   - gateway/base
   - maas-db/instance/base
   - maas-subscriptions/base
+  - maas-registration/base

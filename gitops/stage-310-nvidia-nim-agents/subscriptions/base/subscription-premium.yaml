@@ -1,0 +1,42 @@
+apiVersion: maas.opendatahub.io/v1alpha1
+kind: MaaSSubscription
+metadata:
+  name: demo-premium
+  namespace: models-as-a-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    openshift.io/display-name: "Demo Premium (orchestrator + frontier models)"
+spec:
+  priority: 20
+  owner:
+    groups:
+      - name: rhoai-demo-admins
+      - name: rhoai-demo-users
+    users: []
+  modelRefs:
+    - name: gpt-oss-120b-hosted
+      namespace: models-as-a-service
+      tokenRateLimits:
+        - limit: 300000
+          window: 1m
+    - name: nemotron-super-120b-hosted
+      namespace: models-as-a-service
+      tokenRateLimits:
+        - limit: 300000
+          window: 1m
+    - name: gpt-oss-120b
+      namespace: demo-sandbox
+      tokenRateLimits:
+        - limit: 300000
+          window: 1m
+    - name: nemotron-nano-30b-hosted
+      namespace: models-as-a-service
+      tokenRateLimits:
+        - limit: 300000
+          window: 1m
+    - name: nemotron-mini-4b-hosted
+      namespace: models-as-a-service
+      tokenRateLimits:
+        - limit: 300000
+          window: 1m

@@ -43,29 +43,29 @@ check "stage-210 Application Synced" \
     check_eq "Synced" oc get application stage-210-model-serving-foundation -n openshift-gitops -o jsonpath='{.status.sync.status}'
 check "DSC kserve component Managed" \
     check_eq "Managed" oc get datasciencecluster default-dsc -o jsonpath='{.spec.components.kserve.managementState}'
-check "vllm-runtime ServingRuntime exists" \
-    oc get servingruntime vllm-runtime -n demo-sandbox
+check "3 LLMInferenceServices present" bash -c \
+    "oc get llminferenceservices.serving.kserve.io -n demo-sandbox --no-headers | wc -l | grep -Eq '^ *3$'"
 
 gpu_nodes=$(oc get nodes -l node-role.kubernetes.io/gpu --no-headers 2>/dev/null | grep -c ' Ready' || true)
 
 for isvc in gpt-oss-120b nemotron-nano-30b nemotron-mini-4b; do
-    check "InferenceService $isvc exists" oc get inferenceservice "$isvc" -n demo-sandbox
-    ready=$(oc get inferenceservice "$isvc" -n demo-sandbox \
+    check "LLMInferenceService $isvc exists" oc get llminferenceservices.serving.kserve.io "$isvc" -n demo-sandbox
+    ready=$(oc get llminferenceservices.serving.kserve.io "$isvc" -n demo-sandbox \
         -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo unknown)
     if [[ "$ready" == "True" ]]; then
-        echo "PASS: InferenceService $isvc Ready"; PASS=$((PASS + 1))
+        echo "PASS: LLMInferenceService $isvc Ready"; PASS=$((PASS + 1))
     elif [[ "$gpu_nodes" -eq 0 ]]; then
-        echo "WARN: InferenceService $isvc not Ready (no GPU nodes yet; AWS capacity pending)"
+        echo "WARN: LLMInferenceService $isvc not Ready (no GPU nodes yet; AWS capacity pending)"
         WARN=$((WARN + 1))
     else
-        echo "FAIL: InferenceService $isvc not Ready (GPU nodes present)"; FAIL=$((FAIL + 1))
+        echo "FAIL: LLMInferenceService $isvc not Ready (GPU nodes present)"; FAIL=$((FAIL + 1))
     fi
 done
 
 # Endpoint smoke test only when everything is Ready
 if [[ "$gpu_nodes" -ge 1 ]]; then
     check "gpt-oss-120b endpoint responds (models list)" bash -c \
-        "oc run curl-test-\$\$ --rm -i --restart=Never --image=registry.access.redhat.com/ubi9/ubi-minimal -n demo-sandbox --overrides='{\"spec\":{\"activeDeadlineSeconds\":60}}' -- curl -s http://gpt-oss-120b-predictor.demo-sandbox.svc.cluster.local:8080/v1/models | grep -q gpt-oss"
+        "oc run curl-test-\$\$ --rm -i --restart=Never --image=registry.access.redhat.com/ubi9/ubi-minimal -n demo-sandbox --overrides='{\"spec\":{\"activeDeadlineSeconds\":60}}' -- curl -s https://gpt-oss-120b.demo-sandbox.svc.cluster.local:8000/v1/models -k | grep -q gpt-oss"
 else
     echo "WARN: endpoint smoke tests skipped (no GPU nodes)"
     WARN=$((WARN + 1))

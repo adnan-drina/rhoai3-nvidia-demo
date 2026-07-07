@@ -1,0 +1,21 @@
+apiVersion: maas.opendatahub.io/v1alpha1
+kind: MaaSAuthPolicy
+metadata:
+  name: demo-premium-access
+  namespace: models-as-a-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  modelRefs:
+    - name: gpt-oss-120b-hosted
+      namespace: models-as-a-service
+    - name: nemotron-super-120b-hosted
+      namespace: models-as-a-service
+    - name: gpt-oss-120b
+      namespace: demo-sandbox
+  subjects:
+    groups:
+      - name: rhoai-demo-admins
+      - name: rhoai-demo-users
+    users: []

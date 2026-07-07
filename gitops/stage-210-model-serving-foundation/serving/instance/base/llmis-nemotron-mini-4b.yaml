@@ -1,0 +1,68 @@
+# MaaS-governed local serving: LLMInferenceService is the only local model
+# kind MaaSModelRef accepts (RHOAI 3.4). Pattern from
+# opendatahub-io/models-as-a-service docs/samples/models (modelcar weights
+# via spec.model.uri + Red Hat vLLM runtime image in the template; native
+# binding to maas-default-gateway via router.gateway.refs).
+apiVersion: serving.kserve.io/v1alpha1
+kind: LLMInferenceService
+metadata:
+  name: nemotron-mini-4b
+  namespace: demo-sandbox
+  labels:
+    app: vllm
+    kueue.x-k8s.io/queue-name: default
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    opendatahub.io/hardware-profile-name: mig-2g-20gb
+    opendatahub.io/hardware-profile-namespace: redhat-ods-applications
+spec:
+  model:
+    uri: hf://nvidia/Nemotron-Mini-4B-Instruct
+    name: nvidia/Nemotron-Mini-4B-Instruct
+  replicas: 1
+  router:
+    route: {}
+    gateway:
+      refs:
+        - name: maas-default-gateway
+          namespace: openshift-ingress
+  template:
+    tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+        effect: NoSchedule
+    containers:
+      - name: main
+        image: registry.redhat.io/rhaii/vllm-cuda-rhel9@sha256:5800e12b2a465f15961fcf34b645d79ed4f91ec9161eab22b1205d12682183c8
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: VLLM_ADDITIONAL_ARGS
+            value: "--max-model-len 4096 --gpu-memory-utilization 0.8"
+        resources:
+          requests:
+            nvidia.com/mig-2g.20gb: "1"
+            memory: 16Gi
+            cpu: "2"
+          limits:
+            nvidia.com/mig-2g.20gb: "1"
+            memory: 24Gi
+            cpu: "4"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTPS
+          initialDelaySeconds: 300
+          periodSeconds: 30
+          timeoutSeconds: 30
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+            scheme: HTTPS
+          initialDelaySeconds: 120
+          periodSeconds: 15
+          timeoutSeconds: 15
+          failureThreshold: 60
