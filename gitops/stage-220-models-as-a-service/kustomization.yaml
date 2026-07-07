@@ -10,3 +10,4 @@ resources:
   - maas-subscriptions/base
   - maas-registration/base
   - dsc-activation/base
+  - dashboard-flags/base

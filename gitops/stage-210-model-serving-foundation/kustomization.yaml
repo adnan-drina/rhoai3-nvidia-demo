@@ -11,3 +11,4 @@ resources:
   - gateway/base
   - serving/instance/base
   - dsc-activation/base
+  - dashboard-flags/base

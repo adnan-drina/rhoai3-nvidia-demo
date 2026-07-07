@@ -13,3 +13,4 @@ resources:
   - rhoai/hardware-profiles/base
   - monitoring/base
   - dsc-activation/base
+  - dashboard-flags/base

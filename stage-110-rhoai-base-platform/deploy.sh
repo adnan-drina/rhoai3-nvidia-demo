@@ -89,9 +89,4 @@ wait_until "ODF operator CSV Succeeded" 1200 bash -c \
 wait_until "RHOAI operator CSV Succeeded" 1200 bash -c \
     "oc get csv -n redhat-ods-operator -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhods-operator\..*=Succeeded'"
 
-echo "--- Dashboard surfaces for this stage (documented OdhDashboardConfig patch)"
-# Model registry/catalog pages belong to the base platform.
-oc patch odhdashboardconfig odh-dashboard-config -n redhat-ods-applications \
-    --type merge -p '{"spec":{"dashboardConfig":{"disableModelCatalog":false,"disableModelRegistry":false}}}'
-
 echo "=== Stage 110 deploy complete. Run validate.sh for full health checks. ==="

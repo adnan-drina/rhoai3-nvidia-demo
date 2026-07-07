@@ -86,15 +86,6 @@ oc create route passthrough maas-default-gateway -n openshift-ingress \
 echo "--- MaaS dashboard interface (documented OdhDashboardConfig admin patch)"
 # OdhDashboardConfig is an operator-created singleton; per the RHOAI 3.4
 # MaaS guide, enable Gen AI studio and the MaaS page (AI asset endpoints).
-# Full demo flag set pinned explicitly (upstream defaults vary per build;
-# disableHardwareProfiles is deprecated and must not be set).
-oc patch odhdashboardconfig odh-dashboard-config -n "$MAAS_NS" --type merge \
-    -p '{"spec":{"dashboardConfig":{
-"genAiStudio":true,
-"modelAsService":true,
-"aiAssetCustomEndpoints":true
-}}}'
-
 echo "--- Suspend defective generated key-cleanup CronJob (known 3.4 defect)"
 oc patch cronjob maas-api-key-cleanup -n "$MAAS_NS" --type merge \
     -p '{"spec":{"suspend":true}}' 2>/dev/null || true

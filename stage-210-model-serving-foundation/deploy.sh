@@ -79,9 +79,4 @@ wait_until "DSC KserveReady" 900 \
 echo "--- InferenceServices created (readiness requires GPU capacity)"
 oc get llminferenceservices.serving.kserve.io -n models-as-a-service 2>/dev/null || true
 
-echo "--- Dashboard surfaces for this stage (documented OdhDashboardConfig patch)"
-# Model serving metrics + NIM serving UI belong to this stage.
-oc patch odhdashboardconfig odh-dashboard-config -n redhat-ods-applications \
-    --type merge -p '{"spec":{"dashboardConfig":{"disableKServeMetrics":false,"disablePerformanceMetrics":false,"disableNIMModelServing":false}}}'
-
 echo "=== Stage 210 deploy complete. Model pods start when GPU nodes join; run validate.sh for status. ==="

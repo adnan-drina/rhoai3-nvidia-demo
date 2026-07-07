@@ -8,3 +8,4 @@ resources:
   - rhoai/instance/base
   - model-registry/instance/base
   - access/base
+  - dashboard-flags/base

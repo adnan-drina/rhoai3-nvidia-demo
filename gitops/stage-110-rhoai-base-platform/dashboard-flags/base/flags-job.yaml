@@ -1,0 +1,68 @@
+# Stage 110: model registry/catalog pages.
+# OdhDashboardConfig is an operator-created singleton; per the RHOAI 3.4
+# docs the supported enablement is patching spec.dashboardConfig. This
+# sync-hook Job makes the stage's dashboard surfaces part of its GitOps
+# deployment (same pattern as dsc-activation).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-dashboard-flags-base
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: job-dashboard-flags-base
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+rules:
+  - apiGroups: [opendatahub.io]
+    resources: [odhdashboardconfigs]
+    verbs: [get, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: job-dashboard-flags-base
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: job-dashboard-flags-base
+subjects:
+  - kind: ServiceAccount
+    name: job-dashboard-flags-base
+    namespace: redhat-ods-applications
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-dashboard-flags-base
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 4
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: job-dashboard-flags-base
+      containers:
+        - name: patch
+          image: registry.redhat.io/openshift4/ose-cli:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              oc patch odhdashboardconfig odh-dashboard-config \
+                -n redhat-ods-applications --type merge \
+                -p '{"spec":{"dashboardConfig":{"disableModelCatalog":false,"disableModelRegistry":false}}}'
+              echo "Dashboard surfaces enabled for this stage."
