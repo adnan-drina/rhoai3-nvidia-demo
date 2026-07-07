@@ -1,8 +1,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Instance CRs (StorageCluster, DSCInitialization, DataScienceCluster,
-# ModelRegistry) are added after live CRD verification per PLAN.md.
 resources:
   - odf-mcg/operator/base
+  - odf-mcg/instance/base
   - rhoai/operator/base
+  - rhoai/instance/base

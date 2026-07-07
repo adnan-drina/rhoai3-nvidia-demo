@@ -1,0 +1,15 @@
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+metadata:
+  name: ocs-storagecluster
+  namespace: openshift-storage
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  # Standalone Multicloud Object Gateway only (no Ceph storage device sets).
+  # Field verified against live ODF 4.20 CRD (oc explain
+  # storagecluster.spec.multiCloudGateway.reconcileStrategy).
+  multiCloudGateway:
+    reconcileStrategy: standalone
+    dbStorageClassName: gp3-csi
