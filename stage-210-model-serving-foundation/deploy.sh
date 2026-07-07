@@ -62,8 +62,9 @@ wait_until "RHCL operator CSV Succeeded (pinned v1.3.4)" 1500 bash -c \
 # operator can start before its dependency operators register and caches
 # that state; the CR's own message prescribes an operator restart.
 if oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].message}' 2>/dev/null | grep -q "not installed"; then
-    echo "Kuadrant cached missing dependencies; restarting its operator (per CR message)"
-    oc rollout restart deployment/kuadrant-operator-controller-manager -n openshift-operators
+    echo "Kuadrant cached missing dependencies; deleting its operator pod (per CR message; rollout restart is a no-op because OLM reverts template changes)"
+    oc delete pod -n openshift-operators -l app=kuadrant --ignore-not-found
+    oc get pods -n openshift-operators -o name | grep kuadrant-operator | xargs -r oc delete -n openshift-operators
 fi
 wait_until "Kuadrant CR Ready" 900 \
     check_eq "True" oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
