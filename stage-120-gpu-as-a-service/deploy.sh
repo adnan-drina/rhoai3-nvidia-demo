@@ -111,4 +111,9 @@ wait_until "GPU operator CSV Succeeded" 1200 bash -c \
 wait_until "Kueue operator CSV Succeeded" 1200 bash -c \
     "oc get csv -n openshift-kueue-operator -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^kueue-operator\..*=Succeeded'"
 
+echo "--- Dashboard surfaces for this stage (documented OdhDashboardConfig patch)"
+# Kueue UI + distributed workload metrics + observability pages belong to this stage.
+oc patch odhdashboardconfig odh-dashboard-config -n redhat-ods-applications \
+    --type merge -p '{"spec":{"dashboardConfig":{"disableKueue":false,"disableDistributedWorkloads":false,"observabilityDashboard":true}}}'
+
 echo "=== Stage 120 deploy complete. GPU Machines may wait on AWS capacity; run validate.sh for status. ==="

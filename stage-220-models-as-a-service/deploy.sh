@@ -107,15 +107,7 @@ oc patch odhdashboardconfig odh-dashboard-config -n "$MAAS_NS" --type merge \
     -p '{"spec":{"dashboardConfig":{
 "genAiStudio":true,
 "modelAsService":true,
-"aiAssetCustomEndpoints":true,
-"disableKueue":false,
-"disableDistributedWorkloads":false,
-"disableModelCatalog":false,
-"disableModelRegistry":false,
-"disableKServeMetrics":false,
-"disablePerformanceMetrics":false,
-"disableNIMModelServing":false,
-"observabilityDashboard":true
+"aiAssetCustomEndpoints":true
 }}}'
 
 echo "--- Suspend defective generated key-cleanup CronJob (known 3.4 defect)"
