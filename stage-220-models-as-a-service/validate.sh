@@ -62,6 +62,11 @@ check "maas-db ready" bash -c \
 check "maas external route exists" \
     oc get route maas-default-gateway -n openshift-ingress
 
+check "Dashboard genAiStudio + modelAsService enabled" bash -c \
+    "oc get odhdashboardconfig odh-dashboard-config -n $MAAS_NS -o jsonpath='{.spec.dashboardConfig.genAiStudio}{.spec.dashboardConfig.modelAsService}' | grep -x truetrue"
+check "DSC LlamaStackOperatorReady (MaaS dashboard prerequisite)" \
+    check_eq "True" oc get datasciencecluster default-dsc -o jsonpath='{.status.conditions[?(@.type=="LlamaStackOperatorReady")].status}'
+
 # Functional: the gateway must REJECT unauthenticated model access (401
 # proves the Gateway -> Kuadrant wasm -> Authorino (TLS) chain end to end).
 DOMAIN=$(oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}')

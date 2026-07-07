@@ -1,0 +1,10 @@
+# Stage 220: Llama Stack Operator is a documented prerequisite for the MaaS
+# dashboard interface (Gen AI studio -> AI asset endpoints).
+apiVersion: datasciencecluster.opendatahub.io/v2
+kind: DataScienceCluster
+metadata:
+  name: default-dsc
+spec:
+  components:
+    llamastackoperator:
+      managementState: Managed

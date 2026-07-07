@@ -103,6 +103,12 @@ oc create route passthrough maas-default-gateway -n openshift-ingress \
     --service=maas-default-gateway-data-science-gateway-class --port=443 \
     --hostname="maas.$DOMAIN" 2>/dev/null || echo "maas route already present"
 
+echo "--- MaaS dashboard interface (documented OdhDashboardConfig admin patch)"
+# OdhDashboardConfig is an operator-created singleton; per the RHOAI 3.4
+# MaaS guide, enable Gen AI studio and the MaaS page (AI asset endpoints).
+oc patch odhdashboardconfig odh-dashboard-config -n "$MAAS_NS" --type merge \
+    -p '{"spec":{"dashboardConfig":{"genAiStudio":true,"modelAsService":true}}}'
+
 echo "--- MaaS API rollout"
 wait_until "DSC ModelsAsServiceReady" 1200 \
     check_eq "True" oc get datasciencecluster default-dsc -o jsonpath='{.status.conditions[?(@.type=="ModelsAsServiceReady")].status}'
