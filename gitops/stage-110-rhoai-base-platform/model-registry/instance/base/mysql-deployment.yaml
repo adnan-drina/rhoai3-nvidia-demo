@@ -1,0 +1,66 @@
+# Backing database for the demo model registry. The model-registry-db Secret
+# (database-name/user/password) is created by stage-110 deploy.sh and is never
+# committed to Git.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-registry-db
+  namespace: rhoai-model-registries
+  labels:
+    app: model-registry-db
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: model-registry-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: model-registry-db
+    spec:
+      containers:
+        - name: mysql
+          image: registry.redhat.io/rhel9/mysql-80:latest
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: model-registry-db
+                  key: database-name
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: model-registry-db
+                  key: database-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: model-registry-db
+                  key: database-password
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - mysqladmin ping -u"$MYSQL_USER" -p"$MYSQL_PASSWORD"
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: model-registry-db

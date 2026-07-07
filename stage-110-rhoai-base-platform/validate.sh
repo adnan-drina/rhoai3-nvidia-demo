@@ -73,6 +73,12 @@ check "DataScienceCluster Ready" bash -c \
 check "RHOAI dashboard route exists" bash -c \
     "oc get route -n redhat-ods-applications -o name | grep -q ."
 
+# Model Registry
+check "Model registry DB ready" bash -c \
+    "oc get deployment model-registry-db -n rhoai-model-registries -o jsonpath='{.status.readyReplicas}' | grep -x 1"
+check "ModelRegistry demo-registry Available" bash -c \
+    "oc get modelregistries.modelregistry.opendatahub.io demo-registry -n rhoai-model-registries -o jsonpath='{.status.conditions[?(@.type==\"Available\")].status}' | grep -x True"
+
 echo
 echo "Result: $PASS passed, $FAIL failed"
 [[ $FAIL -eq 0 ]]

@@ -6,3 +6,4 @@ resources:
   - odf-mcg/instance/base
   - rhoai/operator/base
   - rhoai/instance/base
+  - model-registry/instance/base

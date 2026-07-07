@@ -1,0 +1,22 @@
+# Schema verified against live modelregistry.opendatahub.io/v1beta1 CRD
+# (cluster-48jqq, RHOAI 3.4.2): spec.rest is required; mysql requires
+# database/host/username with passwordSecret {name,key}.
+apiVersion: modelregistry.opendatahub.io/v1beta1
+kind: ModelRegistry
+metadata:
+  name: demo-registry
+  namespace: rhoai-model-registries
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  rest: {}
+  mysql:
+    host: model-registry-db.rhoai-model-registries.svc.cluster.local
+    port: 3306
+    database: model_registry
+    username: mlmduser
+    passwordSecret:
+      name: model-registry-db
+      key: database-password
+    skipDBCreation: false

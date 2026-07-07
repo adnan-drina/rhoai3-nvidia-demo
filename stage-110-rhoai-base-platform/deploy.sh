@@ -64,6 +64,19 @@ oc apply -k "$REPO_ROOT/gitops/bootstrap/overlays/demo"
 wait_until "ArgoCD instance Available" 600 \
     check_eq "Available" oc get argocd openshift-gitops -n openshift-gitops -o jsonpath='{.status.phase}'
 
+echo "--- Model registry DB secret (local-only, never committed)"
+if ! oc get secret model-registry-db -n rhoai-model-registries >/dev/null 2>&1; then
+    oc get namespace rhoai-model-registries >/dev/null 2>&1 || oc create namespace rhoai-model-registries
+    DB_PASSWORD=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 20)
+    oc create secret generic model-registry-db -n rhoai-model-registries \
+        --from-literal=database-name=model_registry \
+        --from-literal=database-user=mlmduser \
+        --from-literal=database-password="$DB_PASSWORD"
+    echo "Created model-registry-db secret."
+else
+    echo "model-registry-db secret already present."
+fi
+
 echo "--- Stage 110 ArgoCD Application"
 oc apply -f "$REPO_ROOT/gitops/argocd/app-of-apps/stage-110-rhoai-base-platform.yaml"
 wait_until "stage-110 Application synced and healthy" 1200 \
