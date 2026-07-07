@@ -71,6 +71,18 @@ runs gpt-oss-120b on a community-supported Marlin fallback kernel.
 - Hardware profiles are available in the RHOAI dashboard and route
   deployments to the intended node/slice
 
+## Rejected Alternative: A100 (evaluated 2026-07-07)
+
+- p4d.24xlarge (8x A100 40GB, offered in us-east-2): rejected — 40GB cards
+  cannot host Nano-30B on a partial MIG slice (needs the full card), killing
+  the two-models-one-GPU demo, and gpt-oss-120b no longer fits a single GPU.
+- p4de.24xlarge (8x A100 80GB): same MIG profile names as H100-80GB but not
+  offered in us-east-2 (environment rebuild), ~3x the cost of the p5 pair
+  with 6 idle GPUs, and FP8/MXFP4 models run on Ampere fallback kernels
+  rather than the validated Hopper path.
+- Account P-instance quota measured at 692 vCPUs — quota is not a
+  constraint for any option, including Capacity Blocks or p5.48xlarge burst.
+
 ## Pre-Deployment Checks (AWS)
 
 - Verify `p5.4xlarge` on-demand availability in the target region
