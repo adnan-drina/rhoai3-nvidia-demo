@@ -76,17 +76,17 @@ runs gpt-oss-120b on a community-supported Marlin fallback kernel.
 The ladder is a progression from immediately-runnable to fully local; the
 MachineSets keep hunting p5.4xlarge capacity at every step.
 
-- **Plan A (target, unchanged)**: 2x p5.4xlarge — gpt-oss-120b on a full
+- **Option 1 (target, unchanged)**: 2x p5.4xlarge — gpt-oss-120b on a full
   H100 + Nano-30B/Mini-4B on MIG slices of the second H100.
-- **Plan B (zero GPU nodes — runnable today)**: all three models consumed
+- **Option 2 (zero GPU nodes — runnable today)**: all three models consumed
   via the external MaaS path (NVIDIA API Catalog hosted endpoints:
   gpt-oss-120b, nemotron-3-nano-30b-a3b, nemotron-mini-4b-instruct) while
   capacity retry continues. Makes Stage 220 + 310 the critical path for a
   working demo.
-- **Plan C (one GPU node materializes)**: flip Nano + Mini to the local MIG
-  node (all-balanced slices); gpt-oss-120b stays external via MaaS.
-- **Plan D (both GPU nodes materialize)**: flip gpt-oss-120b to the local
-  full-H100 node — Plan A achieved.
+- **Option 3 (one GPU node materializes)**: flip Nano + Mini to the local
+  MIG node (all-balanced slices); gpt-oss-120b stays external via MaaS.
+- **Option 4 (both GPU nodes materialize)**: flip gpt-oss-120b to the local
+  full-H100 node — Option 1 achieved.
 
 Each step is a MaaS endpoint/config switch, not an infrastructure change;
 AI-Q consumes whichever endpoint MaaS governs at that step.
