@@ -7,6 +7,7 @@ kind: Kustomization
 # DSC overlay (CoP component patch components/maas).
 resources:
   - rhcl/operator/base
+  - lws/base
   - rhcl/instance/base
   - gateway/base
   - maas-db/instance/base

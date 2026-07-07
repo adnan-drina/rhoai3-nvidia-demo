@@ -1,0 +1,68 @@
+# Sync-hook Job configuring Authorino's service-CA trust env (the one piece
+# the Authorino CR cannot express; proven rhoai3-demo pattern, interim
+# until CONNLINK-528).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-configure-kuadrant
+  namespace: kuadrant-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rhoai-nvidia-demo-job-configure-kuadrant
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+rules:
+  - apiGroups: [apps]
+    resources: [deployments]
+    verbs: [get, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rhoai-nvidia-demo-job-configure-kuadrant
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rhoai-nvidia-demo-job-configure-kuadrant
+subjects:
+  - kind: ServiceAccount
+    name: job-configure-kuadrant
+    namespace: kuadrant-system
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-configure-kuadrant
+  namespace: kuadrant-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  activeDeadlineSeconds: 900
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: job-configure-kuadrant
+      containers:
+        - name: configure
+          image: registry.redhat.io/openshift4/ose-cli:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              for i in $(seq 1 60); do
+                oc get deployment authorino -n kuadrant-system >/dev/null 2>&1 && break
+                echo "Waiting for Authorino deployment... ($i/60)"; sleep 10
+              done
+              oc -n kuadrant-system set env deployment/authorino \
+                SSL_CERT_FILE=/etc/ssl/certs/openshift-service-ca/service-ca-bundle.crt \
+                REQUESTS_CA_BUNDLE=/etc/ssl/certs/openshift-service-ca/service-ca-bundle.crt
+              echo "Authorino service CA trust configured."

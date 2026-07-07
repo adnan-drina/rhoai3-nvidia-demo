@@ -79,3 +79,21 @@ AI-Q `values-vllm.yaml` wiring consumed in Stage 320
   Gateway API routing; needs schema port of runtime/args/modelcar URIs) vs
   keep ISVCs and give AI-Q direct endpoints (loses governed-local story).
   Recommendation: convert. GPU-blocked either way, so no rework cost lost.
+
+## Pre-Deployment Alignment Review (2026-07-07)
+
+- LLMInferenceServices rewritten to the proven v1alpha2 shape: inline vLLM
+  args with KServe TLS serving (--enable-ssl-refresh + /var/run/kserve/tls),
+  llm-d scheduler pool with endpointPickerRef, shm volume, proven probe
+  timings, opendatahub.io/dashboard + genai-asset labels (AI asset
+  endpoints visibility), security.opendatahub.io/enable-auth.
+- Nemotron Nano now uses the Red Hat-official modelcar
+  registry.redhat.io/rhai/modelcar-nvidia-nemotron-3-nano-30b-a3b-fp8:3.0
+  (replaces community quay.io image). Mini-4B stays hf:// (public; no RH
+  modelcar identified).
+- Served model names are now short ids ({{.Name}} / model.name):
+  gpt-oss-120b, nemotron-3-nano-30b-a3b, nemotron-mini-4b-instruct -
+  Stage 320 AI-Q VLLM_*_MODEL wiring must use these.
+- vLLM image digest pinned to the proven configuration's
+  rhaii/vllm-cuda-rhel9 digest; on the fresh cluster compare with the GA
+  vllm-cuda-runtime-template digest and bump consciously if newer.

@@ -4,4 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - subscription.yaml
+  - authorino-operator-subscription.yaml
+  - limitador-operator-subscription.yaml
+  - dns-operator-subscription.yaml
   - approve-installplan.yaml

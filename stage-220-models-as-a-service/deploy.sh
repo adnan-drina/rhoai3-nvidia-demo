@@ -47,6 +47,15 @@ check_eq() {
 
 MAAS_NS="redhat-ods-applications"
 
+# MaaS checklist prerequisite: RHCL requires the cert-manager Operator.
+echo "--- Prerequisite: cert-manager Operator"
+if ! oc get csv -A 2>/dev/null | grep -q cert-manager-operator; then
+    echo "ERROR: cert-manager Operator not found. Install it before Stage 220"
+    echo "       (rhoai-maas-governance validation checklist prerequisite)."
+    exit 1
+fi
+echo "OK: cert-manager present"
+
 echo "--- MaaS database secrets (local-only, never committed)"
 if ! oc get secret maas-db-credentials -n "$MAAS_NS" >/dev/null 2>&1; then
     DB_PASSWORD=$(openssl rand -hex 16)
@@ -73,25 +82,11 @@ wait_until "Kuadrant CR Ready" 900 \
 wait_until "maas-default-gateway Programmed" 600 \
     check_eq "True" oc get gateway maas-default-gateway -n openshift-ingress -o jsonpath='{.status.conditions[?(@.type=="Programmed")].status}'
 
-# Interim Authorino TLS bootstrap, mirroring
-# opendatahub-io/models-as-a-service scripts/setup-authorino-tls.sh (until
-# CONNLINK-528). Documented exception: patches the Kuadrant-owned Authorino
-# CR (config CR) and sets env on its generated Deployment (live operational
-# config; the operator may re-reconcile - re-run this script if so).
-echo "--- Authorino TLS (interim bootstrap per upstream MaaS project)"
-AUTHORINO_NS="${AUTHORINO_NAMESPACE:-kuadrant-system}"
-oc annotate service authorino-authorino-authorization -n "$AUTHORINO_NS" \
-    service.beta.openshift.io/serving-cert-secret-name=authorino-server-cert --overwrite
-oc patch authorino authorino -n "$AUTHORINO_NS" --type=merge --patch \
-    '{"spec":{"listener":{"tls":{"enabled":true,"certSecretRef":{"name":"authorino-server-cert"}}}}}'
-oc -n "$AUTHORINO_NS" set env deployment/authorino \
-    SSL_CERT_FILE=/etc/ssl/certs/openshift-service-ca/service-ca-bundle.crt \
-    REQUESTS_CA_BUNDLE=/etc/ssl/certs/openshift-service-ca/service-ca-bundle.crt
-
-# The gateway-auth-bootstrap controller (odh-model-controller) only checks
-# Authorino TLS on Gateway events; nudge a reconcile so it creates the
-# maas-default-gateway-authn-ssl EnvoyFilter now that TLS is enabled
-# (otherwise the gateway returns 500: Envoy dials Authorino in plaintext).
+# Authorino TLS is GitOps-owned (Authorino CR + pre-annotated Service +
+# service-CA trust hook Job in rhcl/instance). Nudge the RHOAI
+# gateway-auth-bootstrap so it observes TLS and creates the authn-ssl
+# EnvoyFilter (it only reconciles on Gateway events).
+echo "--- Gateway reconcile nudge for Authorino TLS EnvoyFilter"
 oc annotate gateway maas-default-gateway -n openshift-ingress \
     reconcile.opendatahub.io/nudge="$(date +%s)" --overwrite
 wait_until "Authorino TLS EnvoyFilter created" 300 \

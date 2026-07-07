@@ -1,4 +1,5 @@
-# From rhcl-operator v1.4.1 alm-examples (Kuadrant v1beta1, empty spec).
+# Kuadrant CR per proven rhoai3-demo config (observability enabled; UWM is
+# on via stage-120).
 apiVersion: kuadrant.io/v1beta1
 kind: Kuadrant
 metadata:
@@ -7,4 +8,6 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "5"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec: {}
+spec:
+  observability:
+    enable: true

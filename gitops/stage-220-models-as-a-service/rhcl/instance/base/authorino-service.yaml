@@ -1,0 +1,24 @@
+# Pre-created Authorino service with the service-CA serving-cert annotation
+# so authorino-server-cert exists declaratively (proven rhoai3-demo
+# pattern; the Authorino operator adopts this Service).
+apiVersion: v1
+kind: Service
+metadata:
+  name: authorino-authorino-authorization
+  namespace: kuadrant-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    service.beta.openshift.io/serving-cert-secret-name: authorino-server-cert
+spec:
+  type: ClusterIP
+  selector:
+    authorino-resource: authorino
+  ports:
+    - name: grpc
+      port: 50051
+      protocol: TCP
+      targetPort: 50051
+    - name: http
+      port: 5001
+      protocol: TCP
+      targetPort: 5001

@@ -120,3 +120,21 @@ application changes required to add governance.
 - Generated maas-api-key-cleanup CronJob defect (http:8080 vs https:8443)
   confirmed; generated CronJob suspended by deploy.sh; annotated
   replacement CronJob in Git until the product fix lands.
+
+## Pre-Deployment Alignment Review (2026-07-07, vs ported skills + proven impl)
+
+- Adopted from proven config: pinned RHCL dependency Subscriptions
+  (authorino/limitador/dns v1.3.1, Manual), declarative Authorino TLS
+  (pre-annotated Service + GitOps Authorino CR + service-CA-trust hook
+  Job - replaces imperative deploy.sh bootstrap), Kuadrant observability
+  enabled, LWS operator prerequisite (LLMInferenceService dependency),
+  cert-manager prerequisite gate in deploy.sh.
+- Deliberate deviations (recorded): gateway TLS via service-CA serving
+  cert through Gateway infrastructure annotations (proven repo derives a
+  maas-gateway-tls Secret from the ingress cert via hook; ours is fully
+  declarative and was verified working); maas-db Postgres Deployment in
+  redhat-ods-applications per upstream setup-database.sh default (proven
+  repo uses a dedicated models-as-a-service-db namespace; both satisfy
+  the checklist requirement that the DB is outside the Kueue-managed
+  model namespace). If maas-db-config ever changes, restart
+  deployment/maas-api per the guide.
