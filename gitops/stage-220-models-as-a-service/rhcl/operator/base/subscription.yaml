@@ -11,3 +11,13 @@ spec:
   name: rhcl-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
+  config:
+    env:
+      # Upstream MaaS prerequisite: tells Kuadrant it runs on the OpenShift
+      # gateway controller so it injects its shim as a WasmPlugin. Without
+      # this, RHOAI's payload-processing EnvoyFilter anchor (subFilter
+      # wasmplugin/...) never matches and the ext-proc (path rewrite +
+      # provider API-key injection for ExternalModels) never installs -
+      # external completions then 404 at the provider.
+      - name: ISTIO_GATEWAY_CONTROLLER_NAME
+        value: openshift.io/gateway-controller/v1
