@@ -34,6 +34,23 @@ Stages must be deployed in numerical order:
   to run unless `oc whoami --show-server` matches
   `RHOAI_EXPECTED_API_SERVER`.
 
+## Stage 120 AWS-Side Resources (outside GitOps)
+
+Created 2026-07-07 with the sandbox AWS credentials to reach p5.4xlarge
+capacity (us-east-2c had none; AWS pointed to 2a/2b):
+
+- Private subnets in the cluster VPC (`vpc-0dfea38bd1924bcfe`), tagged like
+  the installer subnet and associated to the private route table
+  (`rtb-006feaf008e66dcde`, NAT in 2c — cross-AZ NAT data charges apply):
+  - `cluster-48jqq-hsxrr-subnet-private-us-east-2a` = `subnet-0370a9a14f6b8b07b` (10.0.128.0/20)
+  - `cluster-48jqq-hsxrr-subnet-private-us-east-2b` = `subnet-08af499dafecb8123` (10.0.144.0/20)
+- GPU MachineSet AZ targeting via `.env`: `RHOAI_GPU_FULL_AZ=us-east-2a`,
+  `RHOAI_GPU_MIG_AZ=us-east-2b` (stage-120 `deploy.sh` overrides placement
+  and subnet filter per role).
+- These subnets are not managed by the RHDP stack; delete them (and the
+  route-table associations) before environment teardown if RHDP cleanup
+  reports a VPC dependency error.
+
 ## Validation Strategy
 
 Each stage provides a `validate.sh` script that checks component health.
