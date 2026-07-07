@@ -28,9 +28,10 @@ channel (verified present in the cluster catalog).
 - [x] Model Registry: registries namespace and ModelRegistry instance backed
       by an in-cluster MySQL (DB secret created by `deploy.sh`, never
       committed)
-- [ ] Demo access (`setup-access.sh`): htpasswd identity provider with
-      `ai-admin` and `ai-developer` users (passwords from `.env` or
-      generated), groups, and RHOAI admin-group wiring
+- [x] Demo access (`setup-access.sh`): htpasswd identity provider with
+      `ai-admin`, `ai-developer`, and `ai-researcher` users (passwords from
+      `.env` or generated), groups, and RHOAI admin-group wiring (login
+      verified live 2026-07-07)
 
 ## Field Verification Rule
 
