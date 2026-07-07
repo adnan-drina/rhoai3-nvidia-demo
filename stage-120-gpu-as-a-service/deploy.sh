@@ -55,14 +55,17 @@ GPU_INSTANCE_TYPE="${RHOAI_GPU_INSTANCE_TYPE:-p5.4xlarge}"
 INFRA_ID=$(oc get infrastructure cluster -o jsonpath='{.status.infrastructureName}')
 WORKER_MS=$(oc get machineset -n openshift-machine-api -o name | grep -v gpu | head -1 | cut -d/ -f2)
 
+# Optional per-role AZ overrides (RHOAI_GPU_FULL_AZ / RHOAI_GPU_MIG_AZ).
+# Requires a tagged private subnet named
+# <infra>-subnet-private-<az> in the target AZ (see docs/OPERATIONS.md).
 for role in gpu-full gpu-mig; do
     case "$role" in
-        gpu-full) MIG_CONFIG="all-disabled" ;;
-        gpu-mig)  MIG_CONFIG="all-balanced" ;;
+        gpu-full) MIG_CONFIG="all-disabled"; MS_AZ="${RHOAI_GPU_FULL_AZ:-}" ;;
+        gpu-mig)  MIG_CONFIG="all-balanced"; MS_AZ="${RHOAI_GPU_MIG_AZ:-}" ;;
     esac
     oc get machineset "$WORKER_MS" -n openshift-machine-api -o json | \
         MS_ROLE="$role" MIG_CONFIG="$MIG_CONFIG" INFRA_ID="$INFRA_ID" \
-        GPU_INSTANCE_TYPE="$GPU_INSTANCE_TYPE" python3 -c "
+        GPU_INSTANCE_TYPE="$GPU_INSTANCE_TYPE" MS_AZ="$MS_AZ" python3 -c "
 import json, os, sys
 ms = json.load(sys.stdin)
 role = os.environ['MS_ROLE']
@@ -81,6 +84,10 @@ node_labels['nvidia.com/mig.config'] = os.environ['MIG_CONFIG']
 tpl['spec']['taints'] = [{'key': 'nvidia.com/gpu', 'effect': 'NoSchedule'}]
 pv = tpl['spec']['providerSpec']['value']
 pv['instanceType'] = os.environ['GPU_INSTANCE_TYPE']
+az = os.environ.get('MS_AZ')
+if az:
+    pv['placement']['availabilityZone'] = az
+    pv['subnet']['filters'][0]['values'] = [f\"{os.environ['INFRA_ID']}-subnet-private-{az}\"]
 for bd in pv.get('blockDevices', []):
     if 'ebs' in bd:
         bd['ebs']['volumeSize'] = max(int(bd['ebs'].get('volumeSize', 120)), 200)
