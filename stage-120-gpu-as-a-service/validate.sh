@@ -82,8 +82,8 @@ check "NodeFeatureDiscovery instance exists" bash -c \
     "oc get nodefeaturediscovery -n openshift-nfd -o name | grep -q ."
 check "ClusterPolicy exists (mig.strategy mixed)" \
     check_eq "mixed" oc get clusterpolicy gpu-cluster-policy -o jsonpath='{.spec.mig.strategy}'
-check "Kueue CR exists" bash -c \
-    "oc get kueue cluster -o name"
+check "Kueue CR Available" bash -c \
+    "oc get kueues.kueue.openshift.io cluster -o jsonpath='{.status.conditions[?(@.type==\"Available\")].status}' | grep -x True"
 check "ClusterQueue exists" bash -c \
     "oc get clusterqueue -o name | grep -q ."
 check "Hardware profiles exist (h100-full, mig-3g-40gb, mig-2g-20gb)" bash -c \
