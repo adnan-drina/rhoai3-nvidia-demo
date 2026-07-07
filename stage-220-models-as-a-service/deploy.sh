@@ -67,7 +67,7 @@ wait_until "stage-220 Application synced" 900 \
     check_eq "Synced" oc get application stage-220-models-as-a-service -n openshift-gitops \
     -o jsonpath='{.status.sync.status}'
 wait_until "RHCL operator CSV Succeeded" 1200 bash -c \
-    "oc get csv -n kuadrant-system -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhcl-operator\..*=Succeeded'"
+    "oc get csv -n openshift-operators -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhcl-operator\..*=Succeeded'"
 wait_until "Kuadrant CR Ready" 900 \
     check_eq "True" oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
 wait_until "maas-default-gateway Programmed" 600 \
@@ -122,6 +122,10 @@ oc patch odhdashboardconfig odh-dashboard-config -n "$MAAS_NS" --type merge \
 "disableNIMModelServing":false,
 "observabilityDashboard":true
 }}}'
+
+echo "--- Suspend defective generated key-cleanup CronJob (known 3.4 defect)"
+oc patch cronjob maas-api-key-cleanup -n "$MAAS_NS" --type merge \
+    -p '{"spec":{"suspend":true}}' 2>/dev/null || true
 
 echo "--- MaaS API rollout"
 wait_until "DSC ModelsAsServiceReady" 1200 \

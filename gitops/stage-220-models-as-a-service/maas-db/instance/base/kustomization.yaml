@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - postgres.yaml
+  - key-cleanup-cronjob.yaml

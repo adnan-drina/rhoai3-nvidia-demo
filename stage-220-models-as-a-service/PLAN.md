@@ -93,3 +93,30 @@ application changes required to add governance.
 | MaaSSubscription / MaaSModelRef / MaaSAuthPolicy / ExternalModel CRs | Stage 310 scope (upstream sample layout captured: subscription+authpolicy in models-as-a-service ns, MaaSModelRef next to the model) |
 | Playground test (test-maas-models-in-playground) | pending models (Stage 310) |
 | CRITICAL cross-stage finding | MaaSModelRef.modelRef.kind enum is [LLMInferenceService, ExternalModel] only - classic InferenceService (Stage 210 as-deployed) cannot be MaaS-governed; see stage-210 PLAN |
+
+## RHCL Remediation Record (2026-07-07, executed hands-on per OLM docs)
+
+- Symptom: external-model completions failed; payload-processing ext-proc
+  absent because RHCL v1.4.1 injects its wasm shim as a raw EnvoyFilter
+  while the RHOAI ext-proc anchors on the WasmPlugin subfilter name.
+- Fix (proven rhoai3-demo config + OCP "install a specific Operator
+  version" procedure): uninstall v1.4.1 (Subscription+CSV), reinstall
+  pinned startingCSV rhcl-operator.v1.3.4 with Manual approval in
+  openshift-operators; approve only the pinned InstallPlan; the v1.3.5
+  upgrade InstallPlan intentionally remains unapproved.
+- Encountered and resolved: pinned InstallPlan reported Failed on
+  authconfigs CRD replace ("existing CRs ... too restrictive") - the
+  documented trap; stale 1.4 dependency chain (authorino/limitador/dns
+  subs+CSVs in kuadrant-system) removed per the uninstall procedure;
+  generated AuthConfigs deleted and regenerated (22/22) under 1.3; stale
+  1.4 EnvoyFilters deleted, 1.3 regenerated (WasmPlugin + auth/ratelimit).
+  The authconfigs CRD remains at the 1.4 schema (more permissive; runtime
+  proven by E2E) - recorded, not papered over.
+- Verified live: wasm shim delivered via ECDS, ext_proc.bbr present in the
+  gateway 443 filter chain (config obtained via oc port-forward - in-pod
+  curl greps silently return empty and must not be trusted), path rewrite
+  and single-Authorization provider key injection proven byte-exact with a
+  temporary in-cluster header-echo ExternalModel (removed after use).
+- Generated maas-api-key-cleanup CronJob defect (http:8080 vs https:8443)
+  confirmed; generated CronJob suspended by deploy.sh; annotated
+  replacement CronJob in Git until the product fix lands.

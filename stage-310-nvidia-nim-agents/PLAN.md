@@ -56,3 +56,15 @@ is recorded below as an optional future extension, not stage scope.
 
 - Stage 220 (Models as a Service)
 - NVIDIA API key for API Catalog access
+
+## E2E Status (2026-07-07)
+
+- Persona-based governed E2E: key mint/revoke, tier-scoped /v1/models
+  visibility, gateway auth, path rewrite, and provider-key injection all
+  verified working (13/15; header-echo tap proved byte-exact injection).
+- Remaining blocker is the credential itself: .env NVIDIA_API_KEY is an
+  NGC-style key (84 chars, no nvapi- prefix). integrate.api.nvidia.com
+  completions require an nvapi- API key from build.nvidia.com
+  (/v1/models there is unauthenticated - do not use it as a key check).
+  ACTION (user): replace NVIDIA_API_KEY in .env with an nvapi- key, rerun
+  stage-310 deploy.sh (recreates the secret) and validate.sh.

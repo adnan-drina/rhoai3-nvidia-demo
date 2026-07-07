@@ -44,7 +44,7 @@ MAAS_NS="redhat-ods-applications"
 check "stage-220 Application Synced" \
     check_eq "Synced" oc get application stage-220-models-as-a-service -n openshift-gitops -o jsonpath='{.status.sync.status}'
 check "RHCL operator CSV Succeeded" bash -c \
-    "oc get csv -n kuadrant-system -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhcl-operator\..*=Succeeded'"
+    "oc get csv -n openshift-operators -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhcl-operator\..*=Succeeded'"
 check "Kuadrant CR Ready" \
     check_eq "True" oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
 check "Authorino listener TLS enabled" \

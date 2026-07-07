@@ -1,0 +1,31 @@
+# TEMPORARY replacement for the RHOAI-generated maas-api-key-cleanup
+# CronJob, which calls http://maas-api:8080 while the generated Service
+# serves HTTPS on 8443 (known RHOAI 3.4 defect, documented in the proven
+# rhoai3-demo working-configuration). The generated CronJob is suspended by
+# stage-220 deploy.sh. Remove this resource when Red Hat fixes the
+# generated one.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: maas-api-key-cleanup-replacement
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+    demo.rhoai/reason: "workaround for generated CronJob port/scheme defect"
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 120
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: cleanup
+              image: registry.redhat.io/ubi9/ubi-minimal:latest
+              command:
+                - /bin/sh
+                - -c
+                - curl -skf -X POST https://maas-api:8443/internal/v1/api-keys/cleanup
