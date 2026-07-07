@@ -45,6 +45,15 @@ Phase-gate process for creating new demo stages in this repository.
 1. Verify README claims match implementation
 2. Run `validate.sh` successfully
 3. Update `docs/OPERATIONS.md` with deployment notes
+4. **Documentation completeness pass**: enumerate every module/procedure of
+   the relevant official guide(s) for the stage's components and record each
+   as applied, not-applicable, or deferred-with-reason in the stage
+   `PLAN.md` (a "Doc Coverage" section). A stage is not done while any
+   module is unaccounted for.
+5. **Persona acceptance pass**: exercise the stage as the demo users
+   (`oc auth can-i` with user+groups, dashboard page visibility for
+   ai-admin/ai-developer/ai-researcher), not only as kubeadmin. Every
+   user-facing feature the stage enables gets a `validate.sh` check.
 
 ## Stage Numbering
 
