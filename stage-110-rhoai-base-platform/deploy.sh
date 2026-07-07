@@ -67,7 +67,7 @@ wait_until "ArgoCD instance Available" 600 \
 echo "--- Model registry DB secret (local-only, never committed)"
 if ! oc get secret model-registry-db -n rhoai-model-registries >/dev/null 2>&1; then
     oc get namespace rhoai-model-registries >/dev/null 2>&1 || oc create namespace rhoai-model-registries
-    DB_PASSWORD=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 20)
+    DB_PASSWORD=$(openssl rand -hex 16)
     oc create secret generic model-registry-db -n rhoai-model-registries \
         --from-literal=database-name=model_registry \
         --from-literal=database-user=mlmduser \

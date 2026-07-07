@@ -31,7 +31,7 @@ ADMIN_GROUP="rhoai-demo-admins"
 DEV_GROUP="rhoai-demo-users"
 
 # Generate passwords when unset and persist them to .env (gitignored).
-gen_pw() { LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 20; }
+gen_pw() { openssl rand -hex 16; }
 if [[ -z "${AI_ADMIN_PASSWORD:-}" ]]; then
     AI_ADMIN_PASSWORD="$(gen_pw)"
     echo "AI_ADMIN_PASSWORD=$AI_ADMIN_PASSWORD" >> "$REPO_ROOT/.env"

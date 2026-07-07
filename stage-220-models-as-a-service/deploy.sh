@@ -49,7 +49,7 @@ MAAS_NS="redhat-ods-applications"
 
 echo "--- MaaS database secrets (local-only, never committed)"
 if ! oc get secret maas-db-credentials -n "$MAAS_NS" >/dev/null 2>&1; then
-    DB_PASSWORD=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 20)
+    DB_PASSWORD=$(openssl rand -hex 16)
     oc create secret generic maas-db-credentials -n "$MAAS_NS" \
         --from-literal=database-name=maas \
         --from-literal=database-user=maas \
