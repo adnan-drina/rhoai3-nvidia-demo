@@ -45,17 +45,18 @@ check_eq() {
     [[ "$("$@" 2>/dev/null)" == "$expected" ]]
 }
 
-# KServe must be enabled first (stage-110 DSC kserve component patch).
-if ! check_eq "Managed" oc get datasciencecluster default-dsc -o jsonpath='{.spec.components.kserve.managementState}'; then
-    echo "ERROR: DSC kserve component is not Managed; sync stage-110 first."
-    exit 1
-fi
+# KServe is activated by this stage's dsc-activation hook Job during sync.
 
 echo "--- Stage 210 ArgoCD Application"
 oc apply -f "$REPO_ROOT/gitops/argocd/app-of-apps/stage-210-model-serving-foundation.yaml"
 wait_until "stage-210 Application synced" 900 \
     check_eq "Synced" oc get application stage-210-model-serving-foundation -n openshift-gitops \
     -o jsonpath='{.status.sync.status}'
+
+wait_until "DSC kserve Managed (activation hook)" 600 \
+    check_eq "Managed" oc get datasciencecluster default-dsc -o jsonpath='{.spec.components.kserve.managementState}'
+wait_until "DSC KserveReady" 900 \
+    check_eq "True" oc get datasciencecluster default-dsc -o jsonpath='{.status.conditions[?(@.type=="KserveReady")].status}'
 
 echo "--- InferenceServices created (readiness requires GPU capacity)"
 oc get inferenceservice -n demo-sandbox

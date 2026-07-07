@@ -24,3 +24,18 @@ spec:
         duration: 15s
         factor: 2
         maxDuration: 3m
+  ignoreDifferences:
+    # Later stages activate these DSC components with GitOps hook Jobs
+    # (stage 120: kueue; 210: kserve; 220: modelsAsService+llamastack;
+    # 320: mlflow). Base Git keeps them Removed; ignore so selfHeal never
+    # reverts an owning stage's activation.
+    - group: datasciencecluster.opendatahub.io
+      kind: DataScienceCluster
+      name: default-dsc
+      jsonPointers:
+        - /spec/components/kueue
+        - /spec/components/kserve
+        - /spec/components/llamastackoperator
+        - /spec/components/mlflowoperator
+        - /spec/components/aipipelines
+        - /spec/components/trustyai

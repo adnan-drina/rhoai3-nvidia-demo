@@ -79,10 +79,19 @@ owner-stage/rhoai/instance/
   overlays/demo/kustomization.yaml # resources: ../../base + components list
 ```
 
-Each stage contributes a new `components/<feature>/` directory plus one
-line in `overlays/demo/kustomization.yaml` (commented with the owning
-stage). The base manifest stays pristine, and exactly one ArgoCD
-Application (the owning stage's) renders the shared CR.
+Use `components/` overlays only for features owned by the SAME stage that
+renders the CR. For CROSS-STAGE activation (a later stage enabling a DSC
+component), follow the proven rhoai3-demo pattern instead - the product
+recommendation is that components whose operators/prerequisites are not
+yet installed stay `Removed`:
+
+- the owner's base manifest keeps later-stage components explicitly
+  `Removed`;
+- the owner's ArgoCD Application lists those component fields under
+  `ignoreDifferences` (so selfHeal never reverts an activation);
+- each owning stage ships a `dsc-activation` sync-hook Job (SA + RBAC +
+  `oc patch --type merge`), sync-waved AFTER the component's
+  prerequisites exist in that stage.
 
 ## Constraints
 

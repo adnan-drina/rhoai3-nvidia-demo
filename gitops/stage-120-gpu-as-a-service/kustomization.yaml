@@ -12,3 +12,4 @@ resources:
   - kueue/instance/base
   - rhoai/hardware-profiles/base
   - monitoring/base
+  - dsc-activation/base

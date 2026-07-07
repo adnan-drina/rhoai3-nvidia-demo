@@ -5,6 +5,6 @@ resources:
   - odf-mcg/operator/base
   - odf-mcg/instance/base
   - rhoai/operator/base
-  - rhoai/instance/overlays/demo
+  - rhoai/instance/base
   - model-registry/instance/base
   - access/base

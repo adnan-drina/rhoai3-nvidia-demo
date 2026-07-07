@@ -1,0 +1,64 @@
+# Stage 120: kueue Unmanaged (Red Hat build of Kueue operator installs in this stage; Managed is rejected at runtime in RHOAI 3.4).
+# Proven rhoai3-demo pattern: the owning stage activates its DSC component
+# with a sync-hook Job; the stage-110 Application ignores these component
+# fields so selfHeal never reverts the activation.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-enable-dsc-kueue
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rhoai-nvidia-demo-job-enable-dsc-kueue
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+rules:
+  - apiGroups: [datasciencecluster.opendatahub.io]
+    resources: [datascienceclusters]
+    verbs: [get, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rhoai-nvidia-demo-job-enable-dsc-kueue
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rhoai-nvidia-demo-job-enable-dsc-kueue
+subjects:
+  - kind: ServiceAccount
+    name: job-enable-dsc-kueue
+    namespace: redhat-ods-applications
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-enable-dsc-kueue
+  namespace: redhat-ods-applications
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 6
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      serviceAccountName: job-enable-dsc-kueue
+      restartPolicy: Never
+      containers:
+        - name: patch
+          image: registry.redhat.io/openshift4/ose-cli:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              oc patch datasciencecluster default-dsc --type merge \
+                -p '{"spec":{"components":{"kueue":{"managementState":"Unmanaged","defaultClusterQueueName":"default","defaultLocalQueueName":"default"}}}}'
+              echo "DSC component activation applied."

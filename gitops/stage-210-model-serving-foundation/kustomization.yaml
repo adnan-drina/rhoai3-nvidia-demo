@@ -5,3 +5,4 @@ kind: Kustomization
 # patch rhoai/instance/components/kserve (see project-gitops-authoring).
 resources:
   - serving/instance/base
+  - dsc-activation/base

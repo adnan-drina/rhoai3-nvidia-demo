@@ -13,3 +13,4 @@ resources:
   - maas-db/instance/base
   - maas-subscriptions/base
   - maas-registration/base
+  - dsc-activation/base
