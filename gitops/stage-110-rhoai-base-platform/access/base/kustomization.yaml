@@ -3,5 +3,6 @@ kind: Kustomization
 
 resources:
   - demo-namespace.yaml
+  - namespace-list-clusterrole.yaml
   - demo-sandbox-rbac.yaml
   - model-registry-rbac.yaml
