@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stage-110-rhoai-base-platform
+  namespace: openshift-gitops
+spec:
+  project: rhoai-nvidia-demo
+  source:
+    repoURL: https://github.com/adnan-drina/rhoai3-nvidia-demo.git
+    targetRevision: main
+    path: gitops/stage-110-rhoai-base-platform
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

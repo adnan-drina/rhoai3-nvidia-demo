@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stage-220-models-as-a-service
+  namespace: openshift-gitops
+spec:
+  project: rhoai-nvidia-demo
+  source:
+    repoURL: https://github.com/adnan-drina/rhoai3-nvidia-demo.git
+    targetRevision: main
+    path: gitops/stage-220-models-as-a-service
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

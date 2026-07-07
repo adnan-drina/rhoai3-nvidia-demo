@@ -1,0 +1,66 @@
+# Local configuration, credentials, and kubeconfigs
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+*.kubeconfig
+kubeconfig
+
+# OS, editor, and workspace state
+.DS_Store
+Thumbs.db
+*.swp
+*~
+*.tmp
+*.bak
+*.code-workspace
+.idea/
+.vscode/
+
+# Tool-specific local state; keep only reviewed repo bridges
+.cursor/**
+!.cursor/
+!.cursor/hooks.json
+!.cursor/hooks/
+!.cursor/hooks/**
+
+.codex/**
+!.codex/
+!.codex/hooks.json
+!.codex/hooks/
+!.codex/hooks/**
+
+.claude/**
+!.claude/
+!.claude/CLAUDE.md
+/CLAUDE.md
+
+# Runtime and generated artifacts
+/artifacts/
+/runs/
+/tmp/
+/.tmp/
+/output/
+
+# Python local artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.venv-*/
+venv/
+
+# Tracked docs policy: promoted docs plus generated architecture SVGs only
+/docs/**
+!/docs/README.md
+!/docs/BACKLOG.md
+!/docs/OPERATIONS.md
+!/docs/PLATFORM_BASELINE.md
+!/docs/TROUBLESHOOTING.md
+!/docs/assets/
+!/docs/assets/architecture/
+!/docs/assets/architecture/*.svg
+!/docs/assets/demos/
+!/docs/assets/demos/**
+!/docs/assets/*.html
