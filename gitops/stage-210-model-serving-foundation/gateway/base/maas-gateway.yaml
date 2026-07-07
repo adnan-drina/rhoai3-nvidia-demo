@@ -10,6 +10,7 @@ metadata:
   name: maas-default-gateway
   namespace: openshift-ingress
   annotations:
+    argocd.argoproj.io/sync-options: Prune=false
     argocd.argoproj.io/sync-wave: "4"
     # Interim Authorino TLS bootstrap per opendatahub-io/models-as-a-service
     # (until CONNLINK-528); managed=false keeps the RHOAI gateway controller

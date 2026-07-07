@@ -40,6 +40,6 @@ metadata:
   namespace: openshift-lws-operator
   annotations:
     argocd.argoproj.io/sync-wave: "5"
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true,Prune=false
 spec:
   managementState: Managed
