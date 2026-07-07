@@ -88,6 +88,21 @@ oc -n "$AUTHORINO_NS" set env deployment/authorino \
     SSL_CERT_FILE=/etc/ssl/certs/openshift-service-ca/service-ca-bundle.crt \
     REQUESTS_CA_BUNDLE=/etc/ssl/certs/openshift-service-ca/service-ca-bundle.crt
 
+# The gateway-auth-bootstrap controller (odh-model-controller) only checks
+# Authorino TLS on Gateway events; nudge a reconcile so it creates the
+# maas-default-gateway-authn-ssl EnvoyFilter now that TLS is enabled
+# (otherwise the gateway returns 500: Envoy dials Authorino in plaintext).
+oc annotate gateway maas-default-gateway -n openshift-ingress \
+    reconcile.opendatahub.io/nudge="$(date +%s)" --overwrite
+wait_until "Authorino TLS EnvoyFilter created" 300 \
+    oc get envoyfilter maas-default-gateway-authn-ssl -n openshift-ingress
+
+echo "--- External access route (mirrors the RHOAI data-science-gateway pattern)"
+DOMAIN=$(oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}')
+oc create route passthrough maas-default-gateway -n openshift-ingress \
+    --service=maas-default-gateway-data-science-gateway-class --port=443 \
+    --hostname="maas.$DOMAIN" 2>/dev/null || echo "maas route already present"
+
 echo "--- MaaS API rollout"
 wait_until "DSC ModelsAsServiceReady" 1200 \
     check_eq "True" oc get datasciencecluster default-dsc -o jsonpath='{.status.conditions[?(@.type=="ModelsAsServiceReady")].status}'
