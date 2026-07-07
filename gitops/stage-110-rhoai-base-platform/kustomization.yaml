@@ -7,3 +7,4 @@ resources:
   - rhoai/operator/base
   - rhoai/instance/overlays/demo
   - model-registry/instance/base
+  - access/base

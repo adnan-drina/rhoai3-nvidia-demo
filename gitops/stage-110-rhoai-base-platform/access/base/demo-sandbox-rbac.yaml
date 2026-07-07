@@ -1,0 +1,34 @@
+# Demo persona access to the demo-sandbox Data Science Project. Project
+# visibility in the RHOAI dashboard is driven by Kubernetes RBAC; the Auth
+# CR adminGroups wiring only grants dashboard settings access.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rhoai-demo-admins-admin
+  namespace: demo-sandbox
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: rhoai-demo-admins
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rhoai-demo-users-edit
+  namespace: demo-sandbox
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: rhoai-demo-users
