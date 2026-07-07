@@ -1,23 +1,21 @@
-# Red Hat Connectivity Link (Kuadrant): authentication, authorization, and
-# rate limiting for MaaS per RHOAI 3.4 "Govern LLM access with MaaS".
+# Red Hat Connectivity Link (Kuadrant) pinned to the CSV validated in the
+# proven rhoai3-demo configuration. Newer RHCL CSVs (e.g. v1.4.x) generate
+# Gateway WASM configuration that the OpenShift gateway rejects / installs
+# as a raw EnvoyFilter, which breaks the RHOAI payload-processing ext-proc
+# anchor (external-model path rewrite + provider API-key injection).
+# Manual InstallPlan approval + the approve Job keep OLM from drifting.
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: rhcl-operator
-  namespace: kuadrant-system
+  namespace: openshift-operators
+  annotations:
+    argocd.argoproj.io/ignore-healthcheck: "true"
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   channel: stable
-  installPlanApproval: Automatic
+  installPlanApproval: Manual
   name: rhcl-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  config:
-    env:
-      # Upstream MaaS prerequisite: tells Kuadrant it runs on the OpenShift
-      # gateway controller so it injects its shim as a WasmPlugin. Without
-      # this, RHOAI's payload-processing EnvoyFilter anchor (subFilter
-      # wasmplugin/...) never matches and the ext-proc (path rewrite +
-      # provider API-key injection for ExternalModels) never installs -
-      # external completions then 404 at the provider.
-      - name: ISTIO_GATEWAY_CONTROLLER_NAME
-        value: openshift.io/gateway-controller/v1
+  startingCSV: rhcl-operator.v1.3.4

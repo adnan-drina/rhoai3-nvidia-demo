@@ -53,6 +53,11 @@ echo "--- NVIDIA API credential secret (local-only, never committed)"
 oc create secret generic nvidia-api-credentials -n models-as-a-service \
     --from-literal=api-key="$NVIDIA_API_KEY" \
     --dry-run=client -o yaml | oc apply -f -
+# Data key "api-key" AND this label are both required by the
+# payload-processing ext-proc (proven rhoai3-demo trap: missing label ->
+# "provider 'openai' credentials not found").
+oc label secret nvidia-api-credentials -n models-as-a-service \
+    inference.networking.k8s.io/bbr-managed=true --overwrite
 
 echo "--- Stage 310 ArgoCD Application"
 oc apply -f "$REPO_ROOT/gitops/argocd/app-of-apps/stage-310-nvidia-nim-agents.yaml"

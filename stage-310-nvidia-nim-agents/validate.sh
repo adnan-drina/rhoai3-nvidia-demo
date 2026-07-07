@@ -59,28 +59,62 @@ check "2 MaaSAuthPolicies present" bash -c \
 # Governed E2E: mint an API key (subscription auto-selected), list models,
 # run a small completion against a hosted model through the MaaS gateway.
 DOMAIN=$(oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}')
-KEY_RESP=$(curl -sk -X POST "https://maas.$DOMAIN/maas-api/v1/api-keys" \
-    -H "Authorization: Bearer $(oc whoami -t)" -H 'Content-Type: application/json' \
-    -d '{"name":"stage-310-validation"}' --max-time 30 || true)
-MAAS_KEY=$(echo "$KEY_RESP" | python3 -c "import json,sys; print(json.load(sys.stdin).get('key',''))" 2>/dev/null || true)
-if [[ -n "$MAAS_KEY" ]]; then
-    echo "PASS: MaaS API key minted (subscription resolved)"; PASS=$((PASS + 1))
-    if curl -sk "https://maas.$DOMAIN/v1/models" -H "Authorization: Bearer $MAAS_KEY" --max-time 30 | grep -q 'nemotron'; then
-        echo "PASS: /v1/models lists registered models"; PASS=$((PASS + 1))
-    else
-        echo "FAIL: /v1/models did not list registered models"; FAIL=$((FAIL + 1))
+API_SERVER=$(oc whoami --show-server)
+
+# Persona hygiene (project rule): validation runs as the demo personas, never
+# kubeadmin; temporary keys carry meaningful names and are revoked after use.
+persona_e2e() {
+    # persona_e2e <user> <password> <subscription> <model-ref> <target-model>
+    local user=$1 pass=$2 subscription=$3 modelref=$4 target=$5
+    local kc token key_resp maas_key key_id completion
+    kc=$(mktemp)
+    if ! oc login "$API_SERVER" -u "$user" -p "$pass" \
+        --insecure-skip-tls-verify=true --kubeconfig="$kc" >/dev/null 2>&1; then
+        echo "FAIL: $user login failed (check AI_*_PASSWORD in .env)"; FAIL=$((FAIL + 1)); rm -f "$kc"; return
     fi
-    COMPLETION=$(curl -sk "https://maas.$DOMAIN/$MAAS_NS/nemotron-mini-4b-hosted/v1/chat/completions" \
-        -H "Authorization: Bearer $MAAS_KEY" -H 'Content-Type: application/json' \
-        -d '{"model":"nvidia/nemotron-mini-4b-instruct","messages":[{"role":"user","content":"Reply with exactly: MAAS-OK"}],"max_tokens":10}' \
-        --max-time 60 || true)
-    if echo "$COMPLETION" | grep -q 'MAAS-OK\|choices'; then
-        echo "PASS: governed completion through MaaS gateway -> NVIDIA API Catalog"; PASS=$((PASS + 1))
-    else
-        echo "FAIL: governed completion failed: $(echo "$COMPLETION" | head -c 200)"; FAIL=$((FAIL + 1))
+    token=$(oc --kubeconfig="$kc" whoami -t)
+    key_resp=$(curl -sk -X POST "https://maas.$DOMAIN/maas-api/v1/api-keys" \
+        -H "Authorization: Bearer $token" -H 'Content-Type: application/json' \
+        -d "{\"name\":\"stage310-${subscription}-validation\",\"description\":\"temporary stage-310 validate.sh key for $user; auto-revoked\",\"subscription\":\"$subscription\"}" \
+        --max-time 30 || true)
+    maas_key=$(echo "$key_resp" | python3 -c "import json,sys; print(json.load(sys.stdin).get('key',''))" 2>/dev/null || true)
+    key_id=$(echo "$key_resp" | python3 -c "import json,sys; print(json.load(sys.stdin).get('id',''))" 2>/dev/null || true)
+    if [[ -z "$maas_key" ]]; then
+        echo "FAIL: $user could not mint key on $subscription: $(echo "$key_resp" | head -c 160)"
+        FAIL=$((FAIL + 1)); rm -f "$kc"; return
     fi
+    echo "PASS: $user minted temporary key stage310-${subscription}-validation"; PASS=$((PASS + 1))
+    if curl -sk "https://maas.$DOMAIN/v1/models" -H "Authorization: Bearer $maas_key" --max-time 30 | grep -q "$modelref"; then
+        echo "PASS: $user sees $modelref in /v1/models"; PASS=$((PASS + 1))
+    else
+        echo "FAIL: $user does not see $modelref in /v1/models"; FAIL=$((FAIL + 1))
+    fi
+    completion=$(curl -sk "https://maas.$DOMAIN/$MAAS_NS/$modelref/v1/chat/completions" \
+        -H "Authorization: Bearer $maas_key" -H 'Content-Type: application/json' \
+        -d "{\"model\":\"$target\",\"messages\":[{\"role\":\"user\",\"content\":\"Reply with exactly: MAAS-OK\"}],\"max_tokens\":10}" \
+        --max-time 90 || true)
+    if echo "$completion" | grep -q 'choices'; then
+        echo "PASS: $user governed completion via $modelref"; PASS=$((PASS + 1))
+    else
+        echo "FAIL: $user governed completion via $modelref: $(echo "$completion" | head -c 160)"; FAIL=$((FAIL + 1))
+    fi
+    if [[ -n "$key_id" ]]; then
+        curl -sk -X DELETE "https://maas.$DOMAIN/maas-api/v1/api-keys/$key_id" \
+            -H "Authorization: Bearer $token" -o /dev/null --max-time 30 || true
+        echo "PASS: $user temporary key revoked"; PASS=$((PASS + 1))
+    fi
+    rm -f "$kc"
+}
+
+if [[ -n "${AI_DEVELOPER_PASSWORD:-}" ]]; then
+    persona_e2e ai-developer "$AI_DEVELOPER_PASSWORD" demo-standard nemotron-mini-4b-hosted nvidia/nemotron-mini-4b-instruct
 else
-    echo "FAIL: could not mint MaaS API key: $(echo "$KEY_RESP" | head -c 200)"; FAIL=$((FAIL + 1))
+    echo "WARN: AI_DEVELOPER_PASSWORD unset; skipping developer-path E2E"; WARN=$((WARN + 1))
+fi
+if [[ -n "${AI_ADMIN_PASSWORD:-}" ]]; then
+    persona_e2e ai-admin "$AI_ADMIN_PASSWORD" demo-premium gpt-oss-120b-hosted openai/gpt-oss-120b
+else
+    echo "WARN: AI_ADMIN_PASSWORD unset; skipping admin-path E2E"; WARN=$((WARN + 1))
 fi
 
 echo

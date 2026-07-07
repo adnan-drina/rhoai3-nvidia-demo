@@ -54,6 +54,16 @@ Phase-gate process for creating new demo stages in this repository.
    (`oc auth can-i` with user+groups, dashboard page visibility for
    ai-admin/ai-developer/ai-researcher), not only as kubeadmin. Every
    user-facing feature the stage enables gets a `validate.sh` check.
+6. **Persona artifact hygiene**: user-facing artifacts (MaaS API keys,
+   projects, workbenches, playground configs) are created AS the matching
+   demo persona — never as kubeadmin. Names must be meaningful and
+   self-describing (e.g. `stage310-demo-standard-validation`, never `dbg2`
+   or `test`). Validation-created artifacts are revoked/deleted by the same
+   script that created them.
+7. **Proven-reference check**: when a sibling validated project covers the
+   same component (e.g. `rhoai3-demo` for MaaS governance), read its skill
+   references and working-configuration traps BEFORE authoring; prefer its
+   pinned operator versions and validated patterns over catalog defaults.
 
 ## Stage Numbering
 
