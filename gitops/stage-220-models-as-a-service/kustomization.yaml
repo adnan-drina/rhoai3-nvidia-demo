@@ -6,10 +6,6 @@ kind: Kustomization
 # MachineSet precedent. DSC modelsAsService enablement lives in stage-110's
 # DSC overlay (CoP component patch components/maas).
 resources:
-  - rhcl/operator/base
-  - lws/base
-  - rhcl/instance/base
-  - gateway/base
   - maas-db/instance/base
   - maas-subscriptions/base
   - maas-registration/base

@@ -4,5 +4,10 @@ kind: Kustomization
 # KServe enablement lives in stage-110's DSC overlay as the CoP component
 # patch rhoai/instance/components/kserve (see project-gitops-authoring).
 resources:
+  - cert-manager/base
+  - rhcl/operator/base
+  - rhcl/instance/base
+  - lws/base
+  - gateway/base
   - serving/instance/base
   - dsc-activation/base

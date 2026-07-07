@@ -43,6 +43,16 @@ check "stage-210 Application Synced" \
     check_eq "Synced" oc get application stage-210-model-serving-foundation -n openshift-gitops -o jsonpath='{.status.sync.status}'
 check "DSC kserve component Managed" \
     check_eq "Managed" oc get datasciencecluster default-dsc -o jsonpath='{.spec.components.kserve.managementState}'
+check "RHCL operator CSV Succeeded (pinned line)" bash -c \
+    "oc get csv -n openshift-operators -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhcl-operator\..*=Succeeded'"
+check "Kuadrant CR Ready" \
+    check_eq "True" oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
+check "Authorino listener TLS enabled" \
+    check_eq "true" oc get authorino authorino -n kuadrant-system -o jsonpath='{.spec.listener.tls.enabled}'
+check "maas-default-gateway Programmed" \
+    check_eq "True" oc get gateway maas-default-gateway -n openshift-ingress -o jsonpath='{.status.conditions[?(@.type=="Programmed")].status}'
+check "DSC LLMIS dependencies satisfied" \
+    check_eq "True" oc get datasciencecluster default-dsc -o jsonpath='{.status.conditions[?(@.type=="KserveLLMInferenceServiceDependencies")].status}'
 check "3 LLMInferenceServices present" bash -c \
     "oc get llminferenceservices.serving.kserve.io -n models-as-a-service --no-headers | wc -l | grep -Eq '^ *3$'"
 

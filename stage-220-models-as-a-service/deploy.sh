@@ -47,15 +47,6 @@ check_eq() {
 
 MAAS_NS="redhat-ods-applications"
 
-# MaaS checklist prerequisite: RHCL requires the cert-manager Operator.
-echo "--- Prerequisite: cert-manager Operator"
-if ! oc get csv -A 2>/dev/null | grep -q cert-manager-operator; then
-    echo "ERROR: cert-manager Operator not found. Install it before Stage 220"
-    echo "       (rhoai-maas-governance validation checklist prerequisite)."
-    exit 1
-fi
-echo "OK: cert-manager present"
-
 echo "--- MaaS database secrets (local-only, never committed)"
 if ! oc get secret maas-db-credentials -n "$MAAS_NS" >/dev/null 2>&1; then
     DB_PASSWORD=$(openssl rand -hex 16)
@@ -75,12 +66,6 @@ oc apply -f "$REPO_ROOT/gitops/argocd/app-of-apps/stage-220-models-as-a-service.
 wait_until "stage-220 Application synced" 900 \
     check_eq "Synced" oc get application stage-220-models-as-a-service -n openshift-gitops \
     -o jsonpath='{.status.sync.status}'
-wait_until "RHCL operator CSV Succeeded" 1200 bash -c \
-    "oc get csv -n openshift-operators -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhcl-operator\..*=Succeeded'"
-wait_until "Kuadrant CR Ready" 900 \
-    check_eq "True" oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
-wait_until "maas-default-gateway Programmed" 600 \
-    check_eq "True" oc get gateway maas-default-gateway -n openshift-ingress -o jsonpath='{.status.conditions[?(@.type=="Programmed")].status}'
 
 # Authorino TLS is GitOps-owned (Authorino CR + pre-annotated Service +
 # service-CA trust hook Job in rhcl/instance). Nudge the RHOAI

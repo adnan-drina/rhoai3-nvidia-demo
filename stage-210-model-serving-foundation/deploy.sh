@@ -53,6 +53,16 @@ wait_until "stage-210 Application synced" 900 \
     check_eq "Synced" oc get application stage-210-model-serving-foundation -n openshift-gitops \
     -o jsonpath='{.status.sync.status}'
 
+echo "--- LLMIS serving prerequisites (cert-manager, RHCL, Kuadrant, gateway)"
+wait_until "cert-manager CSV Succeeded" 900 bash -c \
+    "oc get csv -n cert-manager-operator --no-headers 2>/dev/null | grep cert-manager-operator | grep -q Succeeded"
+wait_until "RHCL operator CSV Succeeded (pinned v1.3.4)" 1500 bash -c \
+    "oc get csv -n openshift-operators -o jsonpath='{range .items[*]}{.metadata.name}={.status.phase}{\"\n\"}{end}' | grep -E '^rhcl-operator\..*=Succeeded'"
+wait_until "Kuadrant CR Ready" 900 \
+    check_eq "True" oc get kuadrant kuadrant -n kuadrant-system -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}'
+wait_until "maas-default-gateway Programmed" 600 \
+    check_eq "True" oc get gateway maas-default-gateway -n openshift-ingress -o jsonpath='{.status.conditions[?(@.type=="Programmed")].status}'
+
 wait_until "DSC kserve Managed (activation hook)" 600 \
     check_eq "Managed" oc get datasciencecluster default-dsc -o jsonpath='{.spec.components.kserve.managementState}'
 wait_until "DSC KserveReady" 900 \
