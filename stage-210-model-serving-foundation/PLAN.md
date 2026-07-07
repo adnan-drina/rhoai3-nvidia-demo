@@ -25,11 +25,29 @@ AI-Q `values-vllm.yaml` wiring consumed in Stage 320
 
 - [ ] DSC patch to enable KServe
 - [ ] vLLM ServingRuntime(s) for the three models
-- [ ] 3x InferenceServices pinned to Stage 120 hardware profiles (full H100,
-      3g.40gb MIG, 2g.20gb MIG)
-- [ ] Model registry entries for the three models
+- [x] 3x InferenceServices pinned to Stage 120 hardware profiles (full H100,
+      3g.40gb MIG, 2g.20gb MIG) — deployed; Ready pending GPU capacity
+- [ ] Model registry entries for the three models (register once model pods
+      are Running)
 - [ ] Monitoring: UWM ServiceMonitors for vLLM metrics (pattern from
-      rh-research `deploy/helm/observability/helm/uwm/`)
+      rh-research `deploy/helm/observability/helm/uwm/`; author once pods
+      exist to scrape)
+
+## Implementation Notes (live findings, 2026-07-07)
+
+- validate.sh: 6 passed, 0 failed, 4 GPU-capacity warnings. KServe enabled
+  via the stage-110 CoP component patch `components/kserve`.
+- ServingRuntime uses the RHOAI 3.4 GA image from the shipped
+  `vllm-cuda-runtime-template` (digest-pinned, vLLM v0.18.0), not the
+  quickstart's early-access image; /dev/shm volume and probes added per the
+  rh-research chart.
+- RHOAI 3.4 KServe normalizes `serving.kserve.io/deploymentMode:
+  RawDeployment` to `Standard` — Git must say `Standard`. KServe also drops
+  empty `model.name` fields.
+- The `hardwareprofile-isvc-injector` webhook accepted our
+  `opendatahub.io/hardware-profile-name` annotations; explicit resources,
+  tolerations, and the `kueue.x-k8s.io/queue-name: default` label remain the
+  deterministic GitOps truth and matched post-injection.
 
 ## Acceptance Criteria
 
