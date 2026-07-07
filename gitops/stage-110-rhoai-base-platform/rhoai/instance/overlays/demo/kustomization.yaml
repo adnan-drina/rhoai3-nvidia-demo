@@ -13,3 +13,5 @@ components:
   - ../../components/kueue-unmanaged
   # Stage 210
   - ../../components/kserve
+  # Stage 220
+  - ../../components/maas
