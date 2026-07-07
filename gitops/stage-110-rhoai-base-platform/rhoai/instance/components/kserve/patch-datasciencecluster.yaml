@@ -1,0 +1,10 @@
+# Stage 210: KServe model serving (RawDeployment is the only supported mode
+# in RHOAI 3.4 per the live DSC v2 CRD description).
+apiVersion: datasciencecluster.opendatahub.io/v2
+kind: DataScienceCluster
+metadata:
+  name: default-dsc
+spec:
+  components:
+    kserve:
+      managementState: Managed
