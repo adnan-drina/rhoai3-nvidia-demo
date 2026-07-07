@@ -1,4 +1,4 @@
-# Stage 220: MaaS (nested under kserve) + Llama Stack operator; waved AFTER maas-default-gateway and the Kuadrant/Authorino TLS stack exist per the DSC precondition (GatewayNotReady otherwise).
+# Stage 220: MaaS (nested under kserve) + Llama Stack operator; waved FIRST within this stage: the gateway/Kuadrant preconditions are satisfied by stage 210, and activation must precede the maas.opendatahub.io CRs (Tenant, MaaSModelRef, subscriptions) because their CRDs are installed by the MaaS controller this Job enables.
 # Proven rhoai3-demo pattern: the owning stage activates its DSC component
 # with a sync-hook Job; the stage-110 Application ignores these component
 # fields so selfHeal never reverts the activation.
@@ -8,14 +8,14 @@ metadata:
   name: job-enable-dsc-maas
   namespace: redhat-ods-applications
   annotations:
-    argocd.argoproj.io/sync-wave: "9"
+    argocd.argoproj.io/sync-wave: "1"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: rhoai-nvidia-demo-job-enable-dsc-maas
   annotations:
-    argocd.argoproj.io/sync-wave: "9"
+    argocd.argoproj.io/sync-wave: "1"
 rules:
   - apiGroups: [datasciencecluster.opendatahub.io]
     resources: [datascienceclusters]
@@ -26,7 +26,7 @@ kind: ClusterRoleBinding
 metadata:
   name: rhoai-nvidia-demo-job-enable-dsc-maas
   annotations:
-    argocd.argoproj.io/sync-wave: "9"
+    argocd.argoproj.io/sync-wave: "1"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -42,7 +42,7 @@ metadata:
   name: job-enable-dsc-maas
   namespace: redhat-ods-applications
   annotations:
-    argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-wave: "2"
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
 spec:
