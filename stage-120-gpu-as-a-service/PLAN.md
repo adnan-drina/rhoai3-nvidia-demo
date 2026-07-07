@@ -134,3 +134,18 @@ AI-Q consumes whichever endpoint MaaS governs at that step.
 ## Dependencies
 
 - Stage 110 (RHOAI base platform)
+
+## Doc Coverage (audit 2026-07-07)
+
+- NFD operator + instance (Available=True), GPU operator v26.3 +
+  ClusterPolicy (mig mixed), RH build of Kueue (CR Available, cert-manager
+  integration true, frameworks accepted), ClusterQueue/LocalQueue,
+  4 hardware profiles (Queue scheduling), DSC kueue Unmanaged: applied.
+- UWM for workload metrics (cluster-monitoring-config): applied (was a
+  gap; found in audit). Kueue ServiceMonitor scraped; dashboard Kueue UI
+  flag pinned on (disableKueue=false).
+- GPU-dependent validations (drivers, MIG partitioning, DCGM metrics,
+  nvidia-smi): pending AWS capacity.
+- NVIDIA console plugin / Grafana GPU dashboards: not in stage scope
+  (recorded in docs/BACKLOG.md with former stage 330); revisit when GPUs
+  land if demo needs richer GPU visuals.

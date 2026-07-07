@@ -10,3 +10,4 @@ resources:
   - rhcl/instance/base
   - gateway/base
   - maas-db/instance/base
+  - maas-subscriptions/base

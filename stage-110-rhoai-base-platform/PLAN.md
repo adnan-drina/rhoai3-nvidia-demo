@@ -53,3 +53,17 @@ CRs.
 ## Dependencies
 
 None (this is the foundation stage).
+
+## Doc Coverage (audit 2026-07-07)
+
+- Operator install (stable-3.4, CSV 3.4.2), auto-created DSCInitialization,
+  DSC v2 via CoP components, ODF MCG standalone (NooBaa/backingstore/S3
+  route), model registry + MySQL + registry RBAC, htpasswd IdP + groups +
+  Auth CR wiring: applied.
+- Demo persona RBAC on demo-sandbox + registry role bindings: applied (was
+  a gap; found in audit - dashboard project visibility is RBAC-driven).
+- Workbench images present (20 imagestreams); self-provisioning active for
+  authenticated users.
+- Not applied, deliberate: idle notebook culling, custom notebook sizes,
+  cert customization (self-signed policy), disconnected/mirror setup (N/A),
+  usage telemetry left default.

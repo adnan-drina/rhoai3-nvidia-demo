@@ -1,0 +1,11 @@
+# MaaS subscription namespace: maas-api is deployed with
+# MAAS_SUBSCRIPTION_NAMESPACE=models-as-a-service (verified live) and
+# expects MaaSSubscription and MaaSAuthPolicy CRs here (upstream
+# docs/samples/maas-system pattern). Stage 310 adds the CRs.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: models-as-a-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    openshift.io/display-name: Models as a Service

@@ -61,3 +61,21 @@ AI-Q `values-vllm.yaml` wiring consumed in Stage 320
 ## Dependencies
 
 - Stage 120 (GPU as a Service: 2x p5.4xlarge, MIG layout, hardware profiles)
+
+## Doc Coverage (audit 2026-07-07) and REQUIRED REWORK
+
+- Serving runtime from RHOAI GA template, RawDeployment("Standard") ISVCs,
+  modelcar storage, hardware-profile annotations, GPU tolerations: applied.
+- Model metrics path: UWM enabled + disableKServeMetrics/
+  disablePerformanceMetrics pinned false (audit fix); per-model dashboards
+  activate when pods run.
+- vLLM ServiceMonitors + registry entries: deferred until model pods exist.
+- **REQUIRED REWORK (audit finding)**: RHOAI 3.4 MaaS can only govern
+  `LLMInferenceService` (v1alpha1/v1alpha2 CRD present) or `ExternalModel` -
+  `MaaSModelRef.spec.modelRef.kind` has no InferenceService option. The
+  quickstart avoids this by bypassing MaaS; our architecture routes all
+  model access through MaaS. Decision needed: convert the three
+  InferenceServices to LLMInferenceService (aligns with MaaS + native
+  Gateway API routing; needs schema port of runtime/args/modelcar URIs) vs
+  keep ISVCs and give AI-Q direct endpoints (loses governed-local story).
+  Recommendation: convert. GPU-blocked either way, so no rework cost lost.

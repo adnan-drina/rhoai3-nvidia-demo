@@ -76,3 +76,20 @@ application changes required to add governance.
 ## Dependencies
 
 - Stage 210 (model serving foundation)
+
+## Doc Coverage (audit 2026-07-07, MaaS guide + upstream models-as-a-service)
+
+| Procedure / component | Status |
+|---|---|
+| Prerequisites (OCP >= 4.19.9, RHCL operator, Kuadrant CR, KServe Managed, GatewayClass + maas-default-gateway) | applied |
+| Enable modelsAsService in DSC (nested under kserve) | applied |
+| PostgreSQL + maas-db-config secret (upstream setup-database.sh) | applied |
+| Authorino TLS interim bootstrap + gateway annotations + reconcile nudge | applied (documented exception until CONNLINK-528) |
+| Enable MaaS dashboard (genAiStudio, modelAsService flags + Llama Stack operator) | applied (was a gap; found in audit) |
+| Full dashboard flag set pinned (Kueue UI, catalog, metrics, NIM, aiAssetCustomEndpoints TP) | applied (was a gap) |
+| models-as-a-service subscription namespace (MAAS_SUBSCRIPTION_NAMESPACE, verified in live maas-api env) | applied (was a gap; found in audit) |
+| Demo persona RBAC (project + registry) | applied (was a gap) |
+| Tiers (tier-to-group-mapping CM, tier namespaces) | pending: not bootstrapped by component; tiers materialize via dashboard tier management or explicit CM; wire demo groups to tiers in Stage 310 alongside subscriptions |
+| MaaSSubscription / MaaSModelRef / MaaSAuthPolicy / ExternalModel CRs | Stage 310 scope (upstream sample layout captured: subscription+authpolicy in models-as-a-service ns, MaaSModelRef next to the model) |
+| Playground test (test-maas-models-in-playground) | pending models (Stage 310) |
+| CRITICAL cross-stage finding | MaaSModelRef.modelRef.kind enum is [LLMInferenceService, ExternalModel] only - classic InferenceService (Stage 210 as-deployed) cannot be MaaS-governed; see stage-210 PLAN |
