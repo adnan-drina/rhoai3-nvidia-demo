@@ -1,0 +1,13 @@
+# Stage 120: Unmanaged delegates to the Red Hat build of Kueue operator
+# (Managed is rejected at runtime in RHOAI 3.4); queue names match the
+# ClusterQueue/LocalQueue authored in gitops/stage-120-gpu-as-a-service.
+apiVersion: datasciencecluster.opendatahub.io/v2
+kind: DataScienceCluster
+metadata:
+  name: default-dsc
+spec:
+  components:
+    kueue:
+      managementState: Unmanaged
+      defaultClusterQueueName: default
+      defaultLocalQueueName: default
