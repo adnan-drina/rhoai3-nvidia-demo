@@ -11,6 +11,11 @@ metadata:
   namespace: openshift-ingress
   annotations:
     argocd.argoproj.io/sync-wave: "4"
+    # Interim Authorino TLS bootstrap per opendatahub-io/models-as-a-service
+    # (until CONNLINK-528); managed=false keeps the RHOAI gateway controller
+    # from adopting this ArgoCD-owned Gateway.
+    security.opendatahub.io/authorino-tls-bootstrap: "true"
+    opendatahub.io/managed: "false"
 spec:
   gatewayClassName: data-science-gateway-class
   infrastructure:

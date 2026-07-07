@@ -9,3 +9,4 @@ resources:
   - rhcl/operator/base
   - rhcl/instance/base
   - gateway/base
+  - maas-db/instance/base
