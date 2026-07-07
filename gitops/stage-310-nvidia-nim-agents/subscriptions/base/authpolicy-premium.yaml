@@ -13,7 +13,7 @@ spec:
     - name: nemotron-super-120b-hosted
       namespace: models-as-a-service
     - name: gpt-oss-120b
-      namespace: demo-sandbox
+      namespace: models-as-a-service
   subjects:
     groups:
       - name: rhoai-demo-admins

@@ -26,7 +26,7 @@ spec:
         - limit: 300000
           window: 1m
     - name: gpt-oss-120b
-      namespace: demo-sandbox
+      namespace: models-as-a-service
       tokenRateLimits:
         - limit: 300000
           window: 1m

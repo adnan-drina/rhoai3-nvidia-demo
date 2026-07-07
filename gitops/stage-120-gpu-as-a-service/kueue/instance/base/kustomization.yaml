@@ -7,3 +7,4 @@ resources:
   - clusterqueue.yaml
   - demo-namespace.yaml
   - localqueue.yaml
+  - localqueue-maas.yaml

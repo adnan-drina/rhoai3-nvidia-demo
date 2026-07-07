@@ -13,9 +13,9 @@ spec:
     - name: nemotron-mini-4b-hosted
       namespace: models-as-a-service
     - name: nemotron-nano-30b
-      namespace: demo-sandbox
+      namespace: models-as-a-service
     - name: nemotron-mini-4b
-      namespace: demo-sandbox
+      namespace: models-as-a-service
   subjects:
     groups:
       - name: system:authenticated

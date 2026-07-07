@@ -7,7 +7,7 @@ apiVersion: serving.kserve.io/v1alpha1
 kind: LLMInferenceService
 metadata:
   name: nemotron-mini-4b
-  namespace: demo-sandbox
+  namespace: models-as-a-service
   labels:
     app: vllm
     kueue.x-k8s.io/queue-name: default

@@ -44,13 +44,13 @@ check "stage-210 Application Synced" \
 check "DSC kserve component Managed" \
     check_eq "Managed" oc get datasciencecluster default-dsc -o jsonpath='{.spec.components.kserve.managementState}'
 check "3 LLMInferenceServices present" bash -c \
-    "oc get llminferenceservices.serving.kserve.io -n demo-sandbox --no-headers | wc -l | grep -Eq '^ *3$'"
+    "oc get llminferenceservices.serving.kserve.io -n models-as-a-service --no-headers | wc -l | grep -Eq '^ *3$'"
 
 gpu_nodes=$(oc get nodes -l node-role.kubernetes.io/gpu --no-headers 2>/dev/null | grep -c ' Ready' || true)
 
 for isvc in gpt-oss-120b nemotron-nano-30b nemotron-mini-4b; do
-    check "LLMInferenceService $isvc exists" oc get llminferenceservices.serving.kserve.io "$isvc" -n demo-sandbox
-    ready=$(oc get llminferenceservices.serving.kserve.io "$isvc" -n demo-sandbox \
+    check "LLMInferenceService $isvc exists" oc get llminferenceservices.serving.kserve.io "$isvc" -n models-as-a-service
+    ready=$(oc get llminferenceservices.serving.kserve.io "$isvc" -n models-as-a-service \
         -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo unknown)
     if [[ "$ready" == "True" ]]; then
         echo "PASS: LLMInferenceService $isvc Ready"; PASS=$((PASS + 1))
@@ -65,7 +65,7 @@ done
 # Endpoint smoke test only when everything is Ready
 if [[ "$gpu_nodes" -ge 1 ]]; then
     check "gpt-oss-120b endpoint responds (models list)" bash -c \
-        "oc run curl-test-\$\$ --rm -i --restart=Never --image=registry.access.redhat.com/ubi9/ubi-minimal -n demo-sandbox --overrides='{\"spec\":{\"activeDeadlineSeconds\":60}}' -- curl -s https://gpt-oss-120b.demo-sandbox.svc.cluster.local:8000/v1/models -k | grep -q gpt-oss"
+        "oc run curl-test-\$\$ --rm -i --restart=Never --image=registry.access.redhat.com/ubi9/ubi-minimal -n models-as-a-service --overrides='{\"spec\":{\"activeDeadlineSeconds\":60}}' -- curl -s https://gpt-oss-120b.models-as-a-service.svc.cluster.local:8000/v1/models -k | grep -q gpt-oss"
 else
     echo "WARN: endpoint smoke tests skipped (no GPU nodes)"
     WARN=$((WARN + 1))

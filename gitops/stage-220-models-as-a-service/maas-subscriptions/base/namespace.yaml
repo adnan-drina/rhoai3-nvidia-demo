@@ -8,6 +8,7 @@ metadata:
   name: models-as-a-service
   labels:
     opendatahub.io/dashboard: "true"
+    kueue.openshift.io/managed: "true"
   annotations:
     argocd.argoproj.io/sync-wave: "5"
     openshift.io/display-name: Models as a Service
