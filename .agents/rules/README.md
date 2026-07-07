@@ -8,7 +8,7 @@ the relevant skill instead of duplicating procedure text.
 
 | Rule | Purpose |
 |------|---------|
-| `project.md` | Project structure, GitOps authoring, documentation, manifest review, and shared agent guidance |
+| `project.md` | Project structure, GitOps authoring, documentation, manifest review, Red Hat source alignment, and shared agent guidance |
 | `env.md` | Live demo environment deployment, validation, troubleshooting, shutdown, recovery, and redeploy |
 | `rhoai.md` | RHOAI platform component guidance backed by official Red Hat documentation |
 | `ocp.md` | OpenShift Container Platform infrastructure, control plane, networking, auth, monitoring, GitOps, cluster, and storage integration guidance |

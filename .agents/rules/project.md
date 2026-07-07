@@ -53,15 +53,49 @@ Stage READMEs should be concise Why/What documents: introduce the business
 concept, map the concept to official Red Hat and NVIDIA product documentation,
 and show the architecture delta. GitOps artifacts and live demos show the How.
 
-Do not use this rule as the source of truth for specific RHOAI API fields or
-live cluster operations. Use the `rhoai` or `env` rule and matching skills for
-those domains.
-
-Additional documentation-alignment and operator-GitOps skills ported
-from the proven rhoai3-demo project:
+Documentation-alignment and operator-GitOps skills (ported from the proven
+rhoai3-demo project):
 
 - `.agents/skills/project-doc-alignment-audit/SKILL.md`
 - `.agents/skills/project-red-hat-doc-alignment-review/SKILL.md`
 - `.agents/skills/project-red-hat-doc-skill-authoring/SKILL.md`
 - `.agents/skills/project-red-hat-operator-gitops/SKILL.md`
 - `.agents/skills/project-rhoai-doc-chapter-skill-authoring/SKILL.md`
+
+Use `project-red-hat-doc-skill-authoring` when turning official Red Hat
+product documentation into `rhoai-*`, `ocp-*`, or `odf-*` component skills.
+The older `project-rhoai-doc-chapter-skill-authoring` remains compatible for
+RHOAI-only chapter work. Before selecting or creating a product skill,
+consult `.agents/references/red-hat-doc-map.yaml` to map the official Red
+Hat product, version, category, book, and chapter topic to an existing or
+planned flat skill. Generated component skills must capture official
+sources, extraction notes, validation rules, examples, and the
+corresponding doc-map route before they are treated as reusable product
+guidance.
+
+Use `project-red-hat-operator-gitops` when deploying Red Hat Operators
+through GitOps. Follow the Red Hat Community of Practice catalog structure
+as a local curation pattern: operator base, channel overlay, instance
+resources, optional components, and aggregate overlays. Do not commit
+direct remote Kustomize references to the community catalog; product fields
+and channels still come from official Red Hat docs and product skills.
+Operator lifecycle management is also GitOps state: channel changes,
+approval strategy, selected overlay, product baseline, and operand patches
+should be changed in Git and reconciled by Argo CD, not maintained as live
+Subscription drift.
+
+Classify image ownership before changing any image value. Do not pin images
+solely to create repeatability; Red Hat Operators package operational
+knowledge so platform components are installed, configured, and managed in
+an automated, repeatable, and supported way. Explicit image tags or digests
+are exceptions that require Red Hat documentation, a validated artifact
+reference, or a documented non-operator demo-app exception. OLM- and
+operator-owned images, CSV `relatedImages`, generated CR image fields,
+copied CSVs, and operator-created operand Deployments are not
+project-owned. Diagnose those with Subscription, installed CSV, CRD, and
+generated-resource inspection, then fix durable compatibility issues
+through operator lifecycle policy or product configuration.
+
+Do not use this rule as the source of truth for specific RHOAI API fields or
+live cluster operations. Use the `rhoai` or `env` rule and matching skills for
+those domains.
