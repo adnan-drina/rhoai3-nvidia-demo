@@ -71,6 +71,22 @@ runs gpt-oss-120b on a community-supported Marlin fallback kernel.
 - Hardware profiles are available in the RHOAI dashboard and route
   deployments to the intended node/slice
 
+## Deployment Fallback Ladder (agreed 2026-07-07)
+
+1. **Plan A (active)**: 2x p5.4xlarge — gpt-oss-120b on a full H100 +
+   Nano-30B/Mini-4B on MIG slices of the second H100.
+2. **Plan B (capacity fallback, one instance only)**: run the single node as
+   the MIG node (all-balanced: Nano 3g.40gb + Mini 2g.20gb) and switch the
+   orchestrator to NVIDIA-hosted gpt-oss-120b through the Stage 310 external
+   MaaS path (config change only). Preserves the MIG demo moment.
+3. **Plan C (MIG-defect fallback)**: standard non-MIG layout — 3x
+   p5.4xlarge, one model per full H100. Switch cost is small and Git-only:
+   third MachineSet, `mig.config: all-disabled` everywhere, ISVC resources
+   to `nvidia.com/gpu: 1` (drop gpu-memory-utilization caps), ClusterQueue
+   quota `nvidia.com/gpu: 3`. Use only if MIG itself misbehaves: it needs
+   MORE capacity (3 GPUs vs 2), costs +50%, and drops the
+   two-models-one-GPU headline.
+
 ## Rejected Alternative: A100 (evaluated 2026-07-07)
 
 - p4d.24xlarge (8x A100 40GB, offered in us-east-2): rejected — 40GB cards
