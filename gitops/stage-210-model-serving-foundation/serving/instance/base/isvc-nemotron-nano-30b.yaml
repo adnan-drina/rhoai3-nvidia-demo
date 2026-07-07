@@ -26,7 +26,6 @@ spec:
         name: vLLM
       runtime: vllm-runtime
       storageUri: oci://quay.io/jharmison/models:redhatai--nvidia-nemotron-3-nano-30b-a3b-fp8-modelcar
-      name: ""
       args:
         - --served-model-name=RedHatAI/NVIDIA-Nemotron-3-Nano-30B-A3B-FP8
         - --max-model-len=131072

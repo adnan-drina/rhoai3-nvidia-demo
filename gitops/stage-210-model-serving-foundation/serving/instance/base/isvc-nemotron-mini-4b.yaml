@@ -25,7 +25,6 @@ spec:
         name: vLLM
       runtime: vllm-runtime
       storageUri: hf://nvidia/Nemotron-Mini-4B-Instruct
-      name: ""
       args:
         - --served-model-name=nvidia/Nemotron-Mini-4B-Instruct
         - --tensor-parallel-size=1

@@ -26,7 +26,6 @@ spec:
         name: vLLM
       runtime: vllm-runtime
       storageUri: oci://registry.redhat.io/rhelai1/modelcar-gpt-oss-120b:1.5
-      name: ""
       args:
         - --served-model-name=RedHatAI/gpt-oss-120b
         - --tensor-parallel-size=1
