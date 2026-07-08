@@ -34,3 +34,16 @@ Active backlog for the multi-agent research workflows demo implementation.
 - On-cluster NIM microservices via the NVIDIA RAG Blueprint FRAG knowledge
   layer (see stage-310 PLAN.md deferred section; needs GPU capacity beyond
   the 2x p5.4xlarge layout)
+
+## Observability follow-ups (identified 2026-07-08, aligned with reference projects)
+
+- Port the proven Grafana model-serving stack from rhoai3-demo /
+  rhoai3-coding-demo stage-210/030 (Grafana operator + instance,
+  openshift-monitoring datasource + cluster-monitoring-view RBAC, vLLM
+  KServe/GPU + LLM performance dashboards, console link). This is the
+  references' primary Observe & monitor implementation; ours currently
+  covers the RHOAI-native path (COO + DSCI metrics + Perses dashboard).
+- Distributed tracing for agents (rhoai3-demo stage-240 pattern): Tempo +
+  OpenTelemetry collector + distributed-tracing UIPlugin; DSCI
+  monitoring.traces. Relevant for stage 320 agent debugging.
+- MCP servers for the AI asset endpoints MCP tab (rhoai3-demo mcp/base).
