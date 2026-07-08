@@ -138,3 +138,21 @@ application changes required to add governance.
   the checklist requirement that the DB is outside the Kueue-managed
   model namespace). If maas-db-config ever changes, restart
   deployment/maas-api per the guide.
+
+## MaaS Page Alignment Record (2026-07-08, vs rhoai3-demo + rhoai3-coding-demo)
+
+- Gateway TLS converted to the proven design (both references identical):
+  maas-gateway-tls copied from the cluster default ingress certificate by
+  a wave-9 hook; hostname patched to maas.<domain> by a wave-11 hook. Our
+  earlier service-CA cert deviation FAILED the dashboard maas module's
+  TLS validation ("Models as a Service could not be loaded"). Our
+  improvement over both references: gateway hostname fields are under
+  Application ignoreDifferences + RespectIgnoreDifferences (stable;
+  references re-patch via hook on every selfHeal pass).
+- Cluster-wide namespace-reader grant ROLLED BACK (user: over-privilege).
+  Proven pattern: namespace-scoped admin RoleBinding on
+  models-as-a-service + RHOAI adminGroups wiring (both already present).
+- Deliberate deltas vs references (accepted, revisit on demand):
+  restart-kserve-controllers hook (ours: deploy.sh remedies),
+  policies/ per-use-case subscriptions (ours live in stage 310),
+  monitoring/ vllm PrometheusRule + mcp/ MCP servers (BACKLOG).
