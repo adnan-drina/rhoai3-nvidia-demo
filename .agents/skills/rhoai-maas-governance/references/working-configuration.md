@@ -408,3 +408,12 @@ rhoai3-nvidia-demo; check them BEFORE debugging from scratch.
   during the bad window bake the URLs into their generated config - the
   LlamaStackDistribution must be recreated. Playground MaaS providers also
   need a real user API key (UI default is the literal token "fake").
+- STREAMING through the MaaS gateway is unreliable in RHOAI 3.4 (Tech
+  Preview): the payload-processing ext-proc (bbr, gateway-api-inference-
+  extension v1.5.0-rc.2) parses response bodies as JSON and fails on SSE
+  chunks ("invalid character 'd'" = the `data:` prefix; response.go:76 in
+  payload-processing logs). Measured ~50% of streamed responses truncate
+  mid-body ("peer closed connection ... incomplete chunked read" at the
+  client). NON-STREAMING requests are 100% reliable. Demo mitigation:
+  disable streaming in playground model parameters / use stream:false in
+  API calls. Raise as product feedback with the log signature.

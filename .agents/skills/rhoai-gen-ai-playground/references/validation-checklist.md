@@ -221,3 +221,16 @@ Stop and correct the work if any of these are true:
   configuration, or no explicit preview-status caveat.
 - Updating a playground omits the inline vector database deletion warning.
 - Exported Python is presented as a complete runnable application.
+
+## Confirmed In rhoai3-nvidia-demo (2026-07-08)
+
+- Full wiring chain for MaaS-backed playgrounds that was needed in
+  practice: real MaaSModelRef endpoints (see rhoai-maas-governance
+  placeholder-window trap), a persona-minted named API key in a project
+  Secret wired via valueFrom (operator merge quirk: recreate the
+  generated Deployment), and provider_model_id per registered model when
+  the provider target ID differs from the MaaS resource name (NVIDIA
+  slash-form IDs). Editing the playground in the UI regenerates
+  config.yaml and drops hand-added provider_model_id entries - re-apply.
+- Playground streaming toggle OFF for demos: MaaS gateway streaming
+  truncates ~50% of responses in RHOAI 3.4 (see rhoai-maas-governance).
