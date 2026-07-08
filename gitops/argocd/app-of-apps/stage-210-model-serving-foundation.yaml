@@ -36,3 +36,11 @@ spec:
       jsonPointers:
         - /spec/listeners/0/hostname
         - /spec/listeners/1/hostname
+    # Intentional scale operations (GPU-capacity wait / cost shutdown per
+    # env-manage-resources) set spec.replicas live; selfHeal must not
+    # restart the models (proven rhoai3-demo pattern).
+    - group: serving.kserve.io
+      kind: LLMInferenceService
+      namespace: models-as-a-service
+      jsonPointers:
+        - /spec/replicas
