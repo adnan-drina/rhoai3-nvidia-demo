@@ -249,3 +249,17 @@ Stop and correct the work if any of these are true:
   exist there). Verification failure with a MaaS per-model URL is
   cosmetic - the doc marks Verify optional. Confirm with a real POST
   {URL}/chat/completions (200) and save without verifying.
+- Custom-endpoint auth mechanics (confirmed live): the dashboard BFF
+  resolves each endpoint's project Secret (endpoint-api-key-N, data key
+  `api_key`) and injects it per request via the llama-stack provider-data
+  header (X-LlamaStack-Provider-Data: {"openai_api_key": ...}); the
+  llama-stack provider config carries only base_url. The ConfigMap
+  gen-ai-aa-custom-model-endpoints is the dashboard's canonical source -
+  keep it and llama-stack-config consistent when adding endpoints
+  outside the UI, and restart the LSD pod after config changes.
+- Tier keys per endpoint = live governance: a standard-tier key on a
+  premium model returns "subscription ... does not include" from the
+  gateway - correct behavior, pick the matching tier key per endpoint.
+- nvidia/nemotron-mini-4b-instruct REJECTS max_completion_tokens
+  (extra_forbidden 400). llama-stack sends it whenever a token limit is
+  set - leave the playground max-tokens parameter UNSET for Mini.
