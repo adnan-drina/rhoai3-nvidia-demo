@@ -64,5 +64,5 @@ spec:
               set -euo pipefail
               oc patch odhdashboardconfig odh-dashboard-config \
                 -n redhat-ods-applications --type merge \
-                -p '{"spec":{"dashboardConfig":{"genAiStudio":true,"modelAsService":true,"aiAssetCustomEndpoints":true}}}'
+                -p '{"spec":{"dashboardConfig":{"genAiStudio":true,"modelAsService":true,"aiAssetCustomEndpoints":true},"genAiStudioConfig":{"aiAssetCustomEndpoints":{"externalProviders":true,"clusterDomains":[]}}}}'
               echo "Dashboard surfaces enabled for this stage."
