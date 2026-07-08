@@ -59,3 +59,18 @@ Run validation after each stage deployment before proceeding to the next.
 ## Day-2 Operations
 
 _To be documented as stages are implemented._
+
+## Node Disk Pressure / Evicted Pod Corpses (observed 2026-07-08)
+
+Symptom: a component (e.g., rhods-dashboard) accumulates hundreds of
+Failed/ContainerStatusUnknown pods; `oc` list commands time out; one node
+reports `DiskPressure=True` (heavy operator image pulls on small workers).
+
+Runbook:
+1. `oc get nodes -o custom-columns=...DiskPressure...` to find the node.
+2. Delete corpses: `oc delete pods -n <ns> --field-selector=status.phase=Failed`
+   (and `=Succeeded`); they are records, not workloads.
+3. Kubelet image GC responds to the pressure signal automatically; to
+   accelerate: `oc debug node/<node> -- chroot /host crictl rmi --prune`.
+4. Consider larger workers if pressure recurs (m6a.4xlarge is tight for
+   RHOAI + ODF + MaaS + GPU operator image sets).

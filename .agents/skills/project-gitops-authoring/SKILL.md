@@ -93,6 +93,18 @@ yet installed stay `Removed`:
   `oc patch --type merge`), sync-waved AFTER the component's
   prerequisites exist in that stage.
 
+This generalizes to ANY hook-patched field (e.g., the MaaS gateway
+hostname patched to the real cluster domain): the owning Application MUST
+pair `ignoreDifferences` (jsonPointers for the patched fields) with
+`RespectIgnoreDifferences=true` in syncOptions. ignoreDifferences alone
+only masks drift detection - a sync apply still stomps the field back to
+the Git value (this tore down the MaaS gateway chain on 2026-07-08 while
+every app reported Synced/Healthy). Mark platform-critical CRs
+(Gateway, Kuadrant, Authorino, LeaderWorkerSetOperator) with
+`Prune=false` so no transient render can prune them, and install the
+Subscription health Lua (ArgoCD extraConfig) whenever pinned Manual
+subscriptions participate in sync waves.
+
 ## Constraints
 
 - `resourceTrackingMethod: annotation`

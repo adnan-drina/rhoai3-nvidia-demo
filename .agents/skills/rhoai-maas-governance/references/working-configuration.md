@@ -350,3 +350,50 @@ Before declaring MaaS ready in a new or upgraded environment:
   re-run the Stage 210/220 benchmark and update MaaS token limits from measured
   behavior.
 - After each live issue, add the reusable lesson here before closing the stage.
+
+## Traps Confirmed In The rhoai3-nvidia-demo Fresh Replay (2026-07-08)
+
+These were live-debugged on cluster-52lrs and each has a durable Git fix in
+rhoai3-nvidia-demo; check them BEFORE debugging from scratch.
+
+- The dashboard MaaS module VALIDATES TLS on the discovered
+  `https://maas.<apps-domain>` URL. A service-CA gateway certificate fails
+  hostname verification and produces "Models as a Service could not be
+  loaded" plus a missing API keys tab. The gateway MUST terminate with a
+  copy of the cluster default ingress certificate (`maas-gateway-tls`
+  prepare hook + hostname patch hook - both reference projects agree).
+- The maas-ui module calls `GET /api/v1/namespaces` with the LOGGED-IN
+  USER's token for the project picker. Do NOT solve this with a
+  cluster-wide namespace grant (over-privilege); the proven pattern is a
+  namespace-scoped admin RoleBinding on models-as-a-service plus RHOAI
+  `adminGroups` wiring in the Auth CR.
+- MaaS CRDs (Tenant, MaaSModelRef, MaaSSubscription, MaaSAuthPolicy,
+  ExternalModel) are installed by the MaaS controller AFTER the DSC
+  modelsAsService activation. Any Application that carries both the
+  activation and the CRs must wave the activation FIRST or the sync
+  deadlocks on "resource is missing".
+- ArgoCD `ignoreDifferences` alone only masks drift detection; without
+  `RespectIgnoreDifferences=true` in syncOptions, an apply stomps
+  hook-patched fields (DSC component activations, gateway hostname) back
+  to Git values. Symptom chain observed: stage-110 sync reverted
+  modelsAsService to Removed and RHOAI tore down the whole gateway chain
+  while apps still reported Synced/Healthy.
+- Pinned Manual OLM Subscriptions sit in UpgradePending forever (by
+  design). Stock ArgoCD Subscription health treats that as not-healthy
+  and sync waves stall on "waiting for healthy state". Install the
+  Subscription health Lua (installedCSV == startingCSV => Healthy) in the
+  ArgoCD instance extraConfig.
+- The Kuadrant operator caches "dependency not installed" if it starts
+  before authorino/limitador register (combined pinned InstallPlan).
+  Remedy per the CR message is an operator RESTART - but `oc rollout
+  restart` is a NO-OP on OLM-owned deployments (the CSV reverts template
+  changes); DELETE the operator pod instead.
+- Platform-critical CRs (Gateway, Kuadrant, Authorino,
+  LeaderWorkerSetOperator) carry `Prune=false` - a transient render must
+  never be able to prune them.
+- RHCL and LWS are LLMInferenceService dependencies (DSC conditions
+  KserveLLMInferenceServiceDependencies / WideEPDependencies) - they
+  belong to the serving stage, not the MaaS stage. cert-manager is an
+  RHCL prerequisite and is NOT preinstalled on every RHDP sandbox: own it
+  in GitOps (adoption-safe: match the existing OperatorGroup name if one
+  exists).
