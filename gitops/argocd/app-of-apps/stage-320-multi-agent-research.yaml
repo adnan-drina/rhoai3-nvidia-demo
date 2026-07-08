@@ -7,7 +7,7 @@ spec:
   project: rhoai-nvidia-demo
   source:
     repoURL: https://github.com/adnan-drina/rhoai3-nvidia-demo.git
-    targetRevision: feat/stage-120
+    targetRevision: main
     path: gitops/stage-320-multi-agent-research
   destination:
     server: https://kubernetes.default.svc

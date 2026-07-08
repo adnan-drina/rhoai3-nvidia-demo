@@ -10,7 +10,7 @@ spec:
     # Temporarily pinned to the active dev branch per AGENTS.md branching
     # policy (stage-120 patches the shared DSC owned here); restore to main
     # when stabilizing.
-    targetRevision: feat/stage-120
+    targetRevision: main
     path: gitops/stage-110-rhoai-base-platform
   destination:
     server: https://kubernetes.default.svc

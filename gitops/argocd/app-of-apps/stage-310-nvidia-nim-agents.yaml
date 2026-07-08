@@ -9,7 +9,7 @@ spec:
     repoURL: https://github.com/adnan-drina/rhoai3-nvidia-demo.git
     # Temporarily pinned to the active dev branch per AGENTS.md branching
     # policy; restore to main when stabilizing.
-    targetRevision: feat/stage-120
+    targetRevision: main
     path: gitops/stage-310-nvidia-nim-agents
   destination:
     server: https://kubernetes.default.svc
