@@ -14,4 +14,4 @@ resources:
   - monitoring/base
   - dsc-activation/base
   - dashboard-flags/base
-  - observability/base
+  - observability/aggregate/overlays/demo
