@@ -1,4 +1,23 @@
-# RHOAI 3.4 MaaS: documented ExternalModel configuration cannot be used from the Gen AI playground
+# RHOAI 3.4 MaaS: RHOAIENG-63297 workaround is not applicable to provider-namespaced model IDs
+
+Related issue: RHOAIENG-63297 "GET /v1/models returns MaaSModelRef name
+instead of ExternalModel name used in inference body" - RESOLVED, fixed
+in the MaaS API for RHOAI 3.5
+(https://github.com/opendatahub-io/models-as-a-service).
+
+The published RHOAI 3.4 workaround for that issue is: "the MaaSModelRef
+CR name will need to match the model ID for the External Model
+provider." This report documents that the workaround CANNOT be applied
+when the provider model ID is namespaced (contains "/") - which covers
+every NVIDIA API Catalog model - because "/" is not permitted in
+Kubernetes resource names. For such models the identity mismatch remains
+unresolvable on 3.4, and the Gen AI playground MaaS flow fails for them.
+
+Questions for the team:
+- Does the 3.5 fix make the catalog (and the playground MaaS flow) use a
+  value that works for namespaced targetModel IDs?
+- Is a 3.4 z-stream backport planned?
+
 
 ## Environment
 
@@ -169,8 +188,9 @@ Two caveats of the workaround:
 
 ## Requested fix
 
-Either of:
+For RHOAI 3.4 (until/unless the 3.5 fix is backported), either of:
 - the payload processor rewrites the request-body `model` to
-  `spec.targetModel` (making the MaaS resource name a first-class alias), or
+  `spec.targetModel` (making the MaaS resource name a first-class alias
+  that also satisfies the RHOAIENG-63297 workaround for namespaced IDs), or
 - the playground MaaS flow registers/sends `targetModel` instead of the
   resource name.

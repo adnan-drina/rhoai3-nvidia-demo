@@ -417,3 +417,12 @@ rhoai3-nvidia-demo; check them BEFORE debugging from scratch.
   client). NON-STREAMING requests are 100% reliable. Demo mitigation:
   disable streaming in playground model parameters / use stream:false in
   API calls. Raise as product feedback with the log signature.
+- The catalog-vs-inference identity mismatch is tracked upstream as
+  RHOAIENG-63297 (GET /v1/models returns MaaSModelRef name; inference
+  expects the provider-facing name) - RESOLVED in the MaaS API for RHOAI
+  3.5. The published 3.4 workaround (MaaSModelRef name == provider model
+  ID) works ONLY for DNS-safe IDs (the gpt-4o-mini pattern); it is
+  impossible for provider-namespaced IDs (nvidia/..., openai/...) because
+  "/" is illegal in Kubernetes names - for those, use dashboard Custom
+  Endpoints for playground access and send spec.targetModel verbatim in
+  API calls. Re-test the native flow after upgrading to 3.5.
