@@ -397,3 +397,14 @@ rhoai3-nvidia-demo; check them BEFORE debugging from scratch.
   RHCL prerequisite and is NOT preinstalled on every RHDP sandbox: own it
   in GitOps (adoption-safe: match the existing OperatorGroup name if one
   exists).
+- `MaaSModelRef.status.endpoint` is written AT RECONCILE TIME from the
+  gateway hostname and is what maas-api serves as model URLs (survives
+  maas-api restarts). If refs reconciled while the gateway listener still
+  had the Git placeholder hostname, every dependent consumer (AI asset
+  endpoints URLs, Gen AI playground base_urls) inherits
+  maas.placeholder.example.com and fails with connection errors. Fix:
+  nudge-annotate LLMIS-kind refs; DELETE ExternalModel-kind refs (endpoint
+  set at creation) and let ArgoCD recreate them. Playgrounds created
+  during the bad window bake the URLs into their generated config - the
+  LlamaStackDistribution must be recreated. Playground MaaS providers also
+  need a real user API key (UI default is the literal token "fake").
