@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-patch-aiq-consolelink
+  namespace: research-agents
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rhoai-nvidia-demo-patch-aiq-consolelink
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+rules:
+  - apiGroups: [console.openshift.io]
+    resources: [consolelinks]
+    verbs: [get, patch]
+  - apiGroups: [route.openshift.io]
+    resources: [routes]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rhoai-nvidia-demo-patch-aiq-consolelink
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rhoai-nvidia-demo-patch-aiq-consolelink
+subjects:
+  - kind: ServiceAccount
+    name: job-patch-aiq-consolelink
+    namespace: research-agents
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-patch-aiq-consolelink
+  namespace: research-agents
+  annotations:
+    argocd.argoproj.io/sync-wave: "9"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+spec:
+  backoffLimit: 4
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: job-patch-aiq-consolelink
+      containers:
+        - name: patch
+          image: registry.redhat.io/openshift4/ose-cli:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              for i in $(seq 1 30); do
+                HOST=$(oc get route aiq-frontend -n research-agents -o jsonpath='{.spec.host}' 2>/dev/null || true)
+                [[ -n "$HOST" ]] && break; sleep 10
+              done
+              [[ -z "$HOST" ]] && { echo "route not found"; exit 1; }
+              oc patch consolelink rhoai-demo-aiq-research --type merge -p "{\"spec\":{\"href\":\"https://$HOST\"}}"
+              echo "ConsoleLink href -> https://$HOST"

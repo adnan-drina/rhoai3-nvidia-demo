@@ -1,0 +1,17 @@
+# App-launcher shortcut (both OpenShift console and RHOAI dashboard
+# launchers render ConsoleLinks). href carries a Git placeholder patched
+# to the real route by the sync hook; the Application ignores /spec/href.
+apiVersion: console.openshift.io/v1
+kind: ConsoleLink
+metadata:
+  name: rhoai-demo-aiq-research
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  location: ApplicationMenu
+  text: AI-Q Research Assistant
+  href: https://aiq.placeholder.example.com
+  applicationMenu:
+    section: RHOAI Demo
+    imageURL: data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" rx="4" fill="%2376b900"/><circle cx="10" cy="10" r="4.5" fill="none" stroke="white" stroke-width="2"/><rect x="13.2" y="13.2" width="7" height="2.4" rx="1.2" transform="rotate(45 13.2 13.2)" fill="white"/></svg>

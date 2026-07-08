@@ -12,6 +12,8 @@ spec:
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
+    syncOptions:
+      - RespectIgnoreDifferences=true
     automated:
       prune: true
       selfHeal: true
@@ -21,3 +23,9 @@ spec:
         duration: 15s
         factor: 2
         maxDuration: 3m
+  ignoreDifferences:
+    - group: console.openshift.io
+      kind: ConsoleLink
+      name: rhoai-demo-aiq-research
+      jsonPointers:
+        - /spec/href
