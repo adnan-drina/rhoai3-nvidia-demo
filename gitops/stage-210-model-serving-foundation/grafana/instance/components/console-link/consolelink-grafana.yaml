@@ -15,4 +15,4 @@ spec:
   text: RHOAI Demo Grafana
   applicationMenu:
     section: RHOAI Demo
-    imageURL: https://grafana.placeholder.example.com/public/img/grafana_icon.svg
+    imageURL: data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" rx="4" fill="%23ee0000"/><rect x="5" y="13" width="3" height="6" fill="white"/><rect x="10.5" y="9" width="3" height="10" fill="white" opacity=".85"/><rect x="16" y="5" width="3" height="14" fill="white" opacity=".7"/></svg>
