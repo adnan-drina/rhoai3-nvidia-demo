@@ -109,3 +109,12 @@ RHOAI 3.4 object-storage requirements relevant to this demo:
 - MLflow (stage 320): artifact store -> OBC to create in stage 320.
 - TempoStack traces (backlog): S3 backend -> OBC when ported.
 - Workbench data connections: optional, per-demo content.
+
+## AWS-side records: cluster-52lrs GPU-search subnets (2026-07-08)
+
+Hand-made private subnets for multi-AZ p5.4xlarge search (delete BEFORE
+RHDP teardown - see 48jqq lesson): tagged demo.rhoai.io/hand-made=true,
+Name $INFRA-subnet-private-us-east-2b (10.0.128.0/20) and -us-east-2c
+(10.0.144.0/20), associated to the private route table.
+Cleanup: aws ec2 describe-subnets --filters Name=tag:demo.rhoai.io/hand-made,Values=true
+then disassociate + delete-subnet each.
