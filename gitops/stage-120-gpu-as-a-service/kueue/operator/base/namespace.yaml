@@ -2,3 +2,8 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: openshift-kueue-operator
+  labels:
+    # Platform monitoring must scrape the RH-build-of-Kueue metrics
+    # (openshift-* namespaces are excluded from UWM); required for the
+    # RHOAI Workload metrics page to show data.
+    openshift.io/cluster-monitoring: "true"
