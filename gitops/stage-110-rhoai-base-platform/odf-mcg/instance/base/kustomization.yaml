@@ -3,3 +3,6 @@ kind: Kustomization
 
 resources:
   - storagecluster.yaml
+  - console-plugin-script.yaml
+  - console-plugin-rbac.yaml
+  - console-plugin-job.yaml
