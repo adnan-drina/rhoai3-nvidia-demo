@@ -234,3 +234,13 @@ Stop and correct the work if any of these are true:
   config.yaml and drops hand-added provider_model_id entries - re-apply.
 - Playground streaming toggle OFF for demos: MaaS gateway streaming
   truncates ~50% of responses in RHOAI 3.4 (see rhoai-maas-governance).
+- Hosted external models with provider-prefixed IDs (nvidia/..., openai/...)
+  chat in the playground via the DOCUMENTED Custom Endpoints flow (Tech
+  Preview), NOT the MaaS-tab auto-flow: Create endpoint with model ID ==
+  provider ID exactly, URL = the MaaS per-model gateway URL
+  (https://maas.<domain>/models-as-a-service/<ref>/v1), token = the
+  user's own MaaS API key (UI stores it as a project Secret), then Verify
+  model. Requires OdhDashboardConfig genAiStudioConfig.
+  aiAssetCustomEndpoints.externalProviders=true in addition to
+  dashboardConfig.aiAssetCustomEndpoints=true. The MaaS-tab auto-flow
+  remains limited to models whose ref name equals the provider ID.
