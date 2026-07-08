@@ -244,3 +244,8 @@ Stop and correct the work if any of these are true:
   aiAssetCustomEndpoints.externalProviders=true in addition to
   dashboardConfig.aiAssetCustomEndpoints=true. The MaaS-tab auto-flow
   remains limited to models whose ref name equals the provider ID.
+- The custom-endpoint "Verify model" button probes GET {URL}/models, which
+  MaaS per-model gateway paths do NOT route (404; only inference paths
+  exist there). Verification failure with a MaaS per-model URL is
+  cosmetic - the doc marks Verify optional. Confirm with a real POST
+  {URL}/chat/completions (200) and save without verifying.
