@@ -14,6 +14,11 @@ spec:
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
+    syncOptions:
+      # The gateway hostname is patched to the real cluster domain by a
+      # sync hook (Git carries a placeholder); applies must respect the
+      # ignored field or selfHeal oscillates/reverts it.
+      - RespectIgnoreDifferences=true
     automated:
       prune: true
       selfHeal: true
@@ -23,3 +28,11 @@ spec:
         duration: 15s
         factor: 2
         maxDuration: 3m
+  ignoreDifferences:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: maas-default-gateway
+      namespace: openshift-ingress
+      jsonPointers:
+        - /spec/listeners/0/hostname
+        - /spec/listeners/1/hostname
