@@ -105,6 +105,18 @@ every app reported Synced/Healthy). Mark platform-critical CRs
 Subscription health Lua (ArgoCD extraConfig) whenever pinned Manual
 subscriptions participate in sync waves.
 
+## MaaS Model Naming Rule (RHOAIENG-63297)
+
+Name every MaaS-published model resource (LLMInferenceService,
+MaaSModelRef, ExternalModel) EXACTLY as the model identifier clients send
+in inference bodies (the LLMIS served model name / the provider model
+ID). GET /v1/models returns the resource name, and RHOAI 3.4 inference
+requires the provider-facing name - misaligned names break copy-paste
+consumers and the playground (fixed upstream in 3.5). When the provider
+ID is namespaced (contains "/"), alignment is impossible: keep a DNS-safe
+alias + spec.targetModel and serve playground access via dashboard
+Custom Endpoints.
+
 ## Constraints
 
 - `resourceTrackingMethod: annotation`

@@ -3,5 +3,5 @@ kind: Kustomization
 
 resources:
   - llmis-gpt-oss-120b.yaml
-  - llmis-nemotron-nano-30b.yaml
-  - llmis-nemotron-mini-4b.yaml
+  - llmis-nemotron-3-nano-30b-a3b.yaml
+  - llmis-nemotron-mini-4b-instruct.yaml

@@ -49,3 +49,8 @@ Active backlog for the multi-agent research workflows demo implementation.
 - MCP servers for the AI asset endpoints MCP tab (rhoai3-demo mcp/base).
 - Stage 320 storage wiring: MLflow artifact-store OBC (+ Tempo S3 OBC when
   tracing is ported) against openshift-storage.noobaa.io StorageClass.
+- RHOAI 3.5 upgrade follow-ups (RHOAIENG-63297 fixed in 3.5 MaaS API):
+  re-test the native MaaS playground flow for hosted NVIDIA models; if
+  namespaced targetModel IDs work, delete the four custom-endpoint
+  playground entries and their Secrets (demo-sandbox) and simplify the
+  asset page back to catalog rows only.

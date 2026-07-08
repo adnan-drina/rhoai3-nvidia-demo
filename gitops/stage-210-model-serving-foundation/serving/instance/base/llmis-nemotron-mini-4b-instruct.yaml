@@ -4,10 +4,10 @@
 apiVersion: serving.kserve.io/v1alpha2
 kind: LLMInferenceService
 metadata:
-  name: nemotron-mini-4b
+  name: nemotron-mini-4b-instruct
   namespace: models-as-a-service
   labels:
-    app.kubernetes.io/name: nemotron-mini-4b
+    app.kubernetes.io/name: nemotron-mini-4b-instruct
     app.kubernetes.io/component: local-llm
     kueue.x-k8s.io/queue-name: default
     opendatahub.io/dashboard: "true"
@@ -38,12 +38,12 @@ spec:
             failureMode: FailOpen
             group: ""
             kind: Service
-            name: nemotron-mini-4b-epp-service
+            name: nemotron-mini-4b-instruct-epp-service
             port:
               number: 9002
           selector:
             matchLabels:
-              app.kubernetes.io/name: nemotron-mini-4b
+              app.kubernetes.io/name: nemotron-mini-4b-instruct
               app.kubernetes.io/part-of: llminferenceservice
               kserve.io/component: workload
           targetPorts:

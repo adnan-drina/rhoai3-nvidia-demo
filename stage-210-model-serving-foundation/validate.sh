@@ -58,7 +58,7 @@ check "3 LLMInferenceServices present" bash -c \
 
 gpu_nodes=$(oc get nodes -l node-role.kubernetes.io/gpu --no-headers 2>/dev/null | grep -c ' Ready' || true)
 
-for isvc in gpt-oss-120b nemotron-nano-30b nemotron-mini-4b; do
+for isvc in gpt-oss-120b nemotron-3-nano-30b-a3b nemotron-mini-4b-instruct; do
     check "LLMInferenceService $isvc exists" oc get llminferenceservices.serving.kserve.io "$isvc" -n models-as-a-service
     ready=$(oc get llminferenceservices.serving.kserve.io "$isvc" -n models-as-a-service \
         -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo unknown)

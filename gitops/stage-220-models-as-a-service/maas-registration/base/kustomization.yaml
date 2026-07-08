@@ -3,5 +3,5 @@ kind: Kustomization
 
 resources:
   - modelref-gpt-oss-120b.yaml
-  - modelref-nemotron-nano-30b.yaml
-  - modelref-nemotron-mini-4b.yaml
+  - modelref-nemotron-3-nano-30b-a3b.yaml
+  - modelref-nemotron-mini-4b-instruct.yaml

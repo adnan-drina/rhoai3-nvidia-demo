@@ -24,12 +24,12 @@ spec:
       tokenRateLimits:
         - limit: 100000
           window: 1m
-    - name: nemotron-nano-30b
+    - name: nemotron-3-nano-30b-a3b
       namespace: models-as-a-service
       tokenRateLimits:
         - limit: 100000
           window: 1m
-    - name: nemotron-mini-4b
+    - name: nemotron-mini-4b-instruct
       namespace: models-as-a-service
       tokenRateLimits:
         - limit: 100000

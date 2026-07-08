@@ -12,9 +12,9 @@ spec:
       namespace: models-as-a-service
     - name: nemotron-mini-4b-hosted
       namespace: models-as-a-service
-    - name: nemotron-nano-30b
+    - name: nemotron-3-nano-30b-a3b
       namespace: models-as-a-service
-    - name: nemotron-mini-4b
+    - name: nemotron-mini-4b-instruct
       namespace: models-as-a-service
   subjects:
     groups:
