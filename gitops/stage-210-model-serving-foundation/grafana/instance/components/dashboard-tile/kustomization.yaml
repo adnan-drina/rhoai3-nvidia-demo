@@ -3,3 +3,4 @@ kind: Component
 
 resources:
   - odhapplication-grafana.yaml
+  - enable-cm.yaml

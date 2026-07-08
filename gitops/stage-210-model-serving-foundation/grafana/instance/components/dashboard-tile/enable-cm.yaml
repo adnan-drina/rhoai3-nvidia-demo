@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rhoai-demo-grafana-enable
+  namespace: redhat-ods-applications
+  labels:
+    app: odh-dashboard
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+data:
+  validation_result: "true"

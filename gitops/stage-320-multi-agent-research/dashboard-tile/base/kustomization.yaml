@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - odhapplication-aiq.yaml
+  - enable-cm.yaml

@@ -62,4 +62,4 @@ metadata:
 
 | Category | Count |
 |----------|-------|
-| Shared skills | 104 |
+| Shared skills | 105 |
