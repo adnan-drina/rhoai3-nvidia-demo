@@ -52,6 +52,7 @@ venv/
 !/docs/OPERATIONS.md
 !/docs/PLATFORM_BASELINE.md
 !/docs/TROUBLESHOOTING.md
+!/docs/product-feedback-rhoai34-maas.md
 !/docs/assets/
 !/docs/assets/architecture/
 !/docs/assets/architecture/*.svg
