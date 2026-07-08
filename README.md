@@ -11,6 +11,16 @@ workflows that coordinate multiple specialized models to solve complex research
 tasks. This demo builds that capability layer by layer on Red Hat OpenShift AI,
 using NVIDIA NIM microservices and agent frameworks for the agentic AI tier.
 
+## Status (2026-07-08)
+
+All six stages are implemented, deployed from `main`, and validated on the
+active environment (72+ checks green; GPU-dependent items WARN until AWS
+p5.4xlarge capacity lands - see the GPU Arrival Day Runbook in
+docs/OPERATIONS.md). Hosted NVIDIA models serve the full demo today via
+MaaS governance (Option 2); local models flip on with one runbook pass.
+Known product-level findings and the RHOAI 3.5 follow-ups are recorded in
+docs/product-feedback-rhoai34-maas.md and docs/BACKLOG.md.
+
 ## Active Stages
 
 ### Platform Foundation (100s)
