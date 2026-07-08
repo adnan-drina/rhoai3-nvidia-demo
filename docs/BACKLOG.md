@@ -47,3 +47,5 @@ Active backlog for the multi-agent research workflows demo implementation.
   OpenTelemetry collector + distributed-tracing UIPlugin; DSCI
   monitoring.traces. Relevant for stage 320 agent debugging.
 - MCP servers for the AI asset endpoints MCP tab (rhoai3-demo mcp/base).
+- Stage 320 storage wiring: MLflow artifact-store OBC (+ Tempo S3 OBC when
+  tracing is ported) against openshift-storage.noobaa.io StorageClass.

@@ -93,3 +93,19 @@ an approve-installplan Job that only approves the pinned CSV.
 | opentelemetry-product / tempo-product | stable | channel (per reference) | RHOAI Monitoring prerequisites |
 | leader-worker-set | stable-v1.0 | channel-pinned | LLMIS dependency |
 | openshift-cert-manager-operator | stable-v1 | adopt existing install | RHCL prerequisite; RHDP-preinstalled on some sandboxes |
+
+## Object Storage (S3) Consumption Model (analysed 2026-07-08)
+
+MCG standalone (stage 110) provides S3: NooBaa `Ready`, default backing
+store type `aws-s3`, S3 route `s3-openshift-storage.apps.<domain>`, and
+the `openshift-storage.noobaa.io` StorageClass. Consumers claim buckets
+with ObjectBucketClaims (OBC) in their own stage - none exist until a
+component needs one, so the cluster legitimately shows no buckets today.
+
+RHOAI 3.4 object-storage requirements relevant to this demo:
+- Model registry: does NOT use S3 - requires a database (our MySQL,
+  validated). Artifact URIs point at OCI modelcars / HF.
+- AI pipelines: needs S3 (component is Removed in our DSC).
+- MLflow (stage 320): artifact store -> OBC to create in stage 320.
+- TempoStack traces (backlog): S3 backend -> OBC when ported.
+- Workbench data connections: optional, per-demo content.
