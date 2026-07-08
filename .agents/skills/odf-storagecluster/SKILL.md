@@ -84,3 +84,19 @@ troubleshooting content:
 - `references/official-doc-extraction.md`
 - `references/validation-checklist.md`
 - `examples/storagecluster-review-patterns.md`
+
+## Confirmed In rhoai3-nvidia-demo (2026-07-08, ODF 4.20.14 / OCP 4.20.26)
+
+- MCG-standalone StorageCluster (multiCloudGateway reconcileStrategy:
+  standalone) matches the reference project field-for-field; NooBaa Ready
+  with an aws-s3 default backing store on AWS sandboxes.
+- `StorageSystem` CRD does not exist in ODF 4.20 - its absence is NOT a
+  gap; validate StorageCluster/NooBaa directly.
+- The Data Foundation console section requires the `odf-console` plugin
+  on `consoles.operator.openshift.io/cluster`. GitOps installs do not get
+  the console's interactive enablement prompt - use the proven hook trio
+  (script ConfigMap + RBAC + Sync Job) from
+  stage-110 odf-mcg/instance/base/console-plugin-*.yaml.
+- S3 consumption is OBC-based: zero buckets until a consumer claims one
+  (model registry needs a DATABASE, not S3 - see docs/OPERATIONS.md
+  "Object Storage Consumption Model").

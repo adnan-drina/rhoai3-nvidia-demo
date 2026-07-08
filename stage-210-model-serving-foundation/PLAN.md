@@ -97,3 +97,12 @@ AI-Q `values-vllm.yaml` wiring consumed in Stage 320
 - vLLM image digest pinned to the proven configuration's
   rhaii/vllm-cuda-rhel9 digest; on the fresh cluster compare with the GA
   vllm-cuda-runtime-template digest and bump consciously if newer.
+
+## Post-Replay Additions (2026-07-08)
+
+- Grafana model-serving observability stack ported from rhoai3-demo
+  (OAuth-proxied, demo-group gated, thanos datasource, vLLM dashboards,
+  console link).
+- LLMIS scale-to-zero during GPU-capacity wait: spec.replicas=0 live +
+  Application ignoreDifferences on /spec/replicas (stops the CPU
+  router/scheduler eviction churn; see env-manage-resources skill).

@@ -103,3 +103,10 @@ For this repo:
 - `references/official-doc-extraction.md`
 - `references/validation-checklist.md`
 - `examples/kueue-workload-management-patterns.md`
+
+## Confirmed In rhoai3-nvidia-demo (2026-07-08)
+
+- The RHOAI dashboard Workload metrics page has data ONLY if the RH build
+  of Kueue metrics are scraped: label the `openshift-kueue-operator`
+  namespace `openshift.io/cluster-monitoring: "true"` (UWM excludes
+  openshift-* namespaces; the ServiceMonitor alone is not enough).

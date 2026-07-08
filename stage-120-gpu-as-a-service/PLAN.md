@@ -149,3 +149,16 @@ AI-Q consumes whichever endpoint MaaS governs at that step.
 - NVIDIA console plugin / Grafana GPU dashboards: not in stage scope
   (recorded in docs/BACKLOG.md with former stage 330); revisit when GPUs
   land if demo needs richer GPU visuals.
+
+## Post-Replay Additions (2026-07-08)
+
+- Observability (Observe & monitor): COO PINNED v1.4.0 (1.5.x breaks the
+  RHOAI PersesDatasource), Red Hat build of OpenTelemetry + Tempo
+  operators, DSCI monitoring.metrics activation hook, and
+  openshift-kueue-operator labeled openshift.io/cluster-monitoring=true
+  (Workload metrics data path). Details:
+  rhoai-observability references/working-configuration.md.
+- GPU capacity search extended multi-AZ: hand-made private subnets in
+  us-east-2b/2c (tagged demo.rhoai.io/hand-made=true; DELETE before RHDP
+  teardown), MachineSets re-pointed gpu-full->2b, gpu-mig->2c. Persist
+  RHOAI_GPU_FULL_AZ/RHOAI_GPU_MIG_AZ in .env.

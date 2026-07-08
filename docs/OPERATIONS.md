@@ -118,3 +118,10 @@ Name $INFRA-subnet-private-us-east-2b (10.0.128.0/20) and -us-east-2c
 (10.0.144.0/20), associated to the private route table.
 Cleanup: aws ec2 describe-subnets --filters Name=tag:demo.rhoai.io/hand-made,Values=true
 then disassociate + delete-subnet each.
+
+## OLM: Subscription Healthy But No InstallPlan (observed 2026-07-08)
+
+If a Subscription shows healthy catalog sources but status.state stays
+empty and no InstallPlan appears: check for MULTIPLE OperatorGroups in
+the namespace (`oc get operatorgroup -n <ns>`). OLM stalls silently with
+more than one. Delete the stray OG; resolution resumes within a minute.

@@ -67,3 +67,9 @@ None (this is the foundation stage).
 - Not applied, deliberate: idle notebook culling, custom notebook sizes,
   cert customization (self-signed policy), disconnected/mirror setup (N/A),
   usage telemetry left default.
+
+## Post-Replay Additions (2026-07-08)
+
+- ODF console plugin enablement (proven hook trio) - Data Foundation
+  status in the OpenShift console; StorageSystem CRD absent in ODF 4.20
+  by design. S3 consumption model documented in docs/OPERATIONS.md.

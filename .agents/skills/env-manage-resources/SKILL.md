@@ -32,3 +32,13 @@ namespace quotas, and cluster capacity.
 | 220 | `models-as-a-service` |
 | 310 | `nvidia-nim-agents` |
 | 320 | `multi-agent-research` |
+
+## LLMInferenceService Scale-To-Zero (GPU-capacity wait / cost shutdown)
+
+`oc patch llminferenceservice <name> -n models-as-a-service --type merge
+-p '{"spec":{"replicas":0}}'` stops BOTH the GPU-pending workload pods
+and the CPU router/scheduler pods (which otherwise cycle on pressured
+nodes leaving evicted-pod corpses). Prerequisite: the owning Application
+must carry ignoreDifferences on LLMIS `/spec/replicas` plus
+`RespectIgnoreDifferences=true`, or selfHeal restarts the model. Restore
+with replicas: 1 when GPU nodes join.
