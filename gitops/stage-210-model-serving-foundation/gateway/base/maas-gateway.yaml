@@ -1,36 +1,43 @@
-# Required by RHOAI 3.4 MaaS: Gateway named maas-default-gateway in
-# openshift-ingress (DSC condition: "the specified Gateway must exist before
-# enabling MaaS platform reconcile"). Reuses the RHOAI-created
-# data-science-gateway-class (openshift.io/gateway-controller/v1, Accepted)
-# and mirrors the data-science-gateway TLS pattern: OpenShift service-CA
-# serving cert injected via the generated Service's serving-cert annotation.
+# MaaS gateway per the PROVEN rhoai3-demo configuration: TLS terminates
+# with maas-gateway-tls, a copy of the cluster's default ingress
+# certificate (prepared by the wave-9 hook). This matters beyond routing:
+# the dashboard MaaS module VALIDATES TLS against the discovered
+# https://maas.<apps-domain> URL - a service-CA cert fails hostname
+# verification and breaks the AI asset endpoints page ("Models as a
+# Service could not be loaded"). Hostname placeholders are patched to the
+# real cluster domain by the wave-11 hook.
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: maas-default-gateway
   namespace: openshift-ingress
-  annotations:
-    argocd.argoproj.io/sync-options: Prune=false
-    argocd.argoproj.io/sync-wave: "4"
-    # Interim Authorino TLS bootstrap per opendatahub-io/models-as-a-service
-    # (until CONNLINK-528); managed=false keeps the RHOAI gateway controller
-    # from adopting this ArgoCD-owned Gateway.
-    security.opendatahub.io/authorino-tls-bootstrap: "true"
+  labels:
     opendatahub.io/managed: "false"
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+    argocd.argoproj.io/sync-options: Prune=false
+    opendatahub.io/managed: "false"
+    security.opendatahub.io/authorino-tls-bootstrap: "true"
 spec:
   gatewayClassName: data-science-gateway-class
-  infrastructure:
-    annotations:
-      service.beta.openshift.io/serving-cert-secret-name: maas-default-gateway-service-tls
   listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: maas.placeholder.example.com
+      allowedRoutes:
+        namespaces:
+          from: All
     - name: https
       port: 443
       protocol: HTTPS
+      hostname: maas.placeholder.example.com
       allowedRoutes:
         namespaces:
           from: All
       tls:
         mode: Terminate
         certificateRefs:
-          - kind: Secret
-            name: maas-default-gateway-service-tls
+          - group: ""
+            kind: Secret
+            name: maas-gateway-tls
