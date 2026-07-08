@@ -60,7 +60,19 @@ Run validation after each stage deployment before proceeding to the next.
 
 _To be documented as stages are implemented._
 
-## Node Disk Pressure / Evicted Pod Corpses (observed 2026-07-08)
+## Node Disk Pressure / Evicted Pod Corpses (RESOLVED 2026-07-08; root cause confirmed)
+
+Root cause (KubeNodeEviction): LLMInferenceService router-scheduler pods
+are CPU workloads; with predictors Pending on GPU capacity, the
+router-schedulers landed on workers, were evicted on ephemeral-storage
+pressure, and were recreated in a loop. Each cycle left dead-pod
+filesystem artifacts; 431+ stale pods on one node filled the 100GB /var
+and blocked kubelet image GC. Resolution: delete stale pods, scale the
+source LLMIS to replicas 0 (see env-manage-resources), drain + let
+kubelet GC recover, uncordon. Prevention: LLMIS stay at replicas 0 until
+GPU nodes join; Application ignoreDifferences on /spec/replicas.
+
+## Node Disk Pressure / Evicted Pod Corpses (original runbook)
 
 Symptom: a component (e.g., rhods-dashboard) accumulates hundreds of
 Failed/ContainerStatusUnknown pods; `oc` list commands time out; one node
