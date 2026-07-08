@@ -1,0 +1,36 @@
+apiVersion: dashboard.opendatahub.io/v1
+kind: OdhApplication
+metadata:
+  name: rhoai-demo-grafana
+  namespace: redhat-ods-applications
+  labels:
+    app: odh-dashboard
+    app.kubernetes.io/part-of: odh-dashboard
+  annotations:
+    argocd.argoproj.io/sync-wave: "14"
+spec:
+  displayName: Model Serving Grafana
+  description: vLLM and LLM performance dashboards (TTFT, ITL, KV cache, GPU).
+  provider: rhoai3-nvidia-demo
+  support: Self-managed by the demo team
+  category: Self-managed
+  docsLink: https://github.com/adnan-drina/rhoai3-nvidia-demo/tree/main/stage-210-model-serving-foundation
+  getStartedLink: https://github.com/adnan-drina/rhoai3-nvidia-demo/tree/main/stage-210-model-serving-foundation
+  getStartedMarkDown: |-
+    # Model Serving Grafana
+
+    OAuth-protected Grafana with the vLLM KServe/GPU and LLM performance
+    dashboards, fed by OpenShift monitoring (thanos-querier). Sign in with
+    your demo persona.
+  img: |-
+    <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grafana dashboards">
+      <rect width="48" height="48" rx="8" fill="#ee0000"/>
+      <rect x="10" y="26" width="6" height="12" rx="1" fill="#ffffff"/>
+      <rect x="21" y="18" width="6" height="20" rx="1" fill="#ffffff" opacity="0.85"/>
+      <rect x="32" y="10" width="6" height="28" rx="1" fill="#ffffff" opacity="0.7"/>
+    </svg>
+  route: grafana-route
+  routeNamespace: rhoai-demo-grafana
+  kfdefApplications: []
+  csvName: ""
+  quickStart: ""

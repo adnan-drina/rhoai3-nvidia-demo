@@ -8,3 +8,4 @@ components:
   - ../../components/openshift-monitoring-datasource
   - ../../components/model-serving-dashboards
   - ../../components/console-link
+  - ../../components/dashboard-tile

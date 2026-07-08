@@ -44,3 +44,8 @@ spec:
       namespace: models-as-a-service
       jsonPointers:
         - /spec/replicas
+    - group: console.openshift.io
+      kind: ConsoleLink
+      name: rhoai-demo-grafana
+      jsonPointers:
+        - /spec/href

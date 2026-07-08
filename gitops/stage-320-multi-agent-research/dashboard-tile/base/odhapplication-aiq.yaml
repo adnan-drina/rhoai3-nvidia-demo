@@ -1,0 +1,35 @@
+apiVersion: dashboard.opendatahub.io/v1
+kind: OdhApplication
+metadata:
+  name: rhoai-demo-aiq-research
+  namespace: redhat-ods-applications
+  labels:
+    app: odh-dashboard
+    app.kubernetes.io/part-of: odh-dashboard
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+spec:
+  displayName: AI-Q Research Assistant
+  description: Multi-agent deep research (NVIDIA AI-Q) on MaaS-governed models.
+  provider: rhoai3-nvidia-demo
+  support: Self-managed by the demo team
+  category: Self-managed
+  docsLink: https://github.com/adnan-drina/rhoai3-nvidia-demo/tree/main/stage-320-multi-agent-research
+  getStartedLink: https://github.com/adnan-drina/rhoai3-nvidia-demo/tree/main/stage-320-multi-agent-research
+  getStartedMarkDown: |-
+    # AI-Q Research Assistant
+
+    Chat with the multi-agent research app: conversational answers, shallow
+    web research with citations, and asynchronous deep-research reports -
+    every model call governed by Models-as-a-Service.
+  img: |-
+    <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AI-Q research">
+      <rect width="48" height="48" rx="8" fill="#76b900"/>
+      <circle cx="20" cy="20" r="8" fill="none" stroke="#ffffff" stroke-width="3.5"/>
+      <rect x="26" y="26" width="13" height="4" rx="2" transform="rotate(45 26 26)" fill="#ffffff"/>
+    </svg>
+  route: aiq-frontend
+  routeNamespace: research-agents
+  kfdefApplications: []
+  csvName: ""
+  quickStart: ""
