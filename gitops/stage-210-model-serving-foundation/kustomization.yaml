@@ -10,5 +10,6 @@ resources:
   - lws/base
   - gateway/base
   - serving/instance/base
+  - grafana/aggregate/overlays/demo
   - dsc-activation/base
   - dashboard-flags/base
