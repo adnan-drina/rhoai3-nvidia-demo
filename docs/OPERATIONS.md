@@ -137,3 +137,27 @@ If a Subscription shows healthy catalog sources but status.state stays
 empty and no InstallPlan appears: check for MULTIPLE OperatorGroups in
 the namespace (`oc get operatorgroup -n <ns>`). OLM stalls silently with
 more than one. Delete the stray OG; resolution resumes within a minute.
+
+## GPU Arrival Day Runbook
+
+When a p5.4xlarge Machine reaches Running (machinesets hunt in
+us-east-2b/2c; 2a exhausted):
+
+1. Node joins with the MIG label from its MachineSet
+   (gpu-full=all-disabled, gpu-mig=all-balanced); GPU operator applies
+   MIG; verify `oc get nodes -l node-role.kubernetes.io/gpu` allocatable
+   shows nvidia.com/gpu or mig-* resources.
+2. Scale local models: for m in gpt-oss-120b nemotron-3-nano-30b-a3b
+   nemotron-mini-4b-instruct: `oc patch llminferenceservice $m -n
+   models-as-a-service --type merge -p '{"spec":{"replicas":1}}'`
+   (replicas are under ignoreDifferences; router-schedulers return
+   automatically).
+3. Wait LLMIS Ready; stage-210 validate WARNs clear; MaaSModelRefs for
+   locals go Ready; local models appear per-tier in /v1/models and the
+   playground natively (names aligned to served IDs).
+4. Swap AI-Q to local models: update the `aiq-model-wiring` ConfigMap in
+   research-agents (BASE_URLs -> $MAAS/{gpt-oss-120b,
+   nemotron-3-nano-30b-a3b,nemotron-mini-4b-instruct}; MODEL ids equal to
+   those ref names) and restart deploy/aiq-backend. Hosted wiring remains
+   the documented fallback (Option 2).
+5. Re-run validate.sh for stages 120/210/320.

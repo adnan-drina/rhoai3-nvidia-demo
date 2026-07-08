@@ -18,25 +18,25 @@ to a specific rh-research ref and record it here when porting.
 
 ## Components
 
-- [ ] Namespace + Kustomize base ported from the aiq-rh chart templates:
+- [x] Namespace + Kustomize base ported from the aiq-rh chart templates:
       backend Deployment/Service (nvcr.io/nvidia/blueprint/aiq-agent),
       frontend Deployment/Service/Route (nvcr.io/nvidia/blueprint/aiq-frontend),
       Postgres (Deployment/PVC/init ConfigMap)
-- [ ] Workflow ConfigMap: project-owned adaptation of `config_web_vllm.yml`
+- [x] Workflow ConfigMap: project-owned adaptation of `config_web_vllm.yml`
       pointing `VLLM_*_BASE_URL` at Stage 220 MaaS endpoints with a
       MaaS-minted `VLLM_API_KEY`
 - [ ] Researcher-swap config variant (Super-120B via Stage 310 external
       model) for the live governance demo beat
-- [ ] Secrets (external, never committed): `aiq-credentials` (DB user/pass,
+- [x] Secrets (external, never committed): `aiq-credentials` (DB user/pass,
       `TAVILY_API_KEY`, optional `SERPER_API_KEY`), `ngc-api` image pull
       secret for nvcr.io
-- [ ] Data sources: Tavily web search enabled; Serper paper search optional;
+- [x] Data sources: Tavily web search enabled; Serper paper search optional;
       LlamaIndex/Chroma knowledge layer as the baseline knowledge backend
 - [ ] MLflow tracing (part of the quickstart app chart, so in scope here):
       OTel exporter with redaction pointed at the RHOAI MLflow endpoint
       (`mlflow.redhat-ods-applications.svc:8443/v1/traces`), plus the
       MLflow token secret and RBAC ported from the aiq-rh templates
-- [ ] Demo research workflow script (shallow cited answer -> clarifier ->
+- [x] Demo research workflow script (shallow cited answer -> clarifier ->
       async deep-research report)
 
 ## Acceptance Criteria
