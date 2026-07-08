@@ -74,3 +74,22 @@ Runbook:
    accelerate: `oc debug node/<node> -- chroot /host crictl rmi --prune`.
 4. Consider larger workers if pressure recurs (m6a.4xlarge is tight for
    RHOAI + ODF + MaaS + GPU operator image sets).
+
+## Operator Lifecycle Pins (authoritative; verify BEFORE authoring any Subscription)
+
+Any new operator Subscription MUST be checked against this table, the
+relevant rhoai-*/ocp-* skill, and the reference projects (rhoai3-demo,
+rhoai3-coding-demo) BEFORE commit. Pinned entries use Manual approval +
+an approve-installplan Job that only approves the pinned CSV.
+
+| Operator | Channel | Pin | Why |
+|---|---|---|---|
+| rhods-operator | stable-3.4 | channel-pinned | demo baseline RHOAI 3.4 |
+| rhcl-operator | stable | v1.3.4 Manual | 1.4.x breaks gateway WASM anchoring |
+| authorino/limitador/dns operators | stable | v1.3.1 Manual | RHCL 1.3 dependency set |
+| cluster-observability-operator | stable | v1.4.0 Manual | 1.5.x breaks RHOAI PersesDatasource (caCert.namespace) |
+| kueue-operator | stable-v1.3 | channel-pinned | RHOAI 3.4 external Kueue baseline |
+| gpu-operator-certified | v26.3 | channel-pinned | validated MIG mixed strategy |
+| opentelemetry-product / tempo-product | stable | channel (per reference) | RHOAI Monitoring prerequisites |
+| leader-worker-set | stable-v1.0 | channel-pinned | LLMIS dependency |
+| openshift-cert-manager-operator | stable-v1 | adopt existing install | RHCL prerequisite; RHDP-preinstalled on some sandboxes |
