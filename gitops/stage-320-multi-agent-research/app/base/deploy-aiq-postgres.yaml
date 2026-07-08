@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiq-postgres
+  namespace: research-agents
+  labels:
+    project: aiq
+    app: aiq-postgres
+    component: postgres
+  annotations:
+    argocd.argoproj.io/sync-wave: '5'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aiq-postgres
+  template:
+    metadata:
+      labels:
+        app: aiq-postgres
+        component: postgres
+    spec:
+      serviceAccountName: aiq-postgres
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: postgres
+        image: bitnami/postgresql:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: postgres
+          containerPort: 5432
+          protocol: TCP
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - "-c"
+            - pg_isready -U $POSTGRES_USER -d aiq_jobs
+          failureThreshold: 5
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - "-c"
+            - pg_isready -U $POSTGRES_USER -d aiq_jobs
+          failureThreshold: 5
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+        env:
+        - name: ENV
+          value: ''
+        - name: POSTGRES_DB
+          value: aiq_jobs
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: aiq-credentials
+              key: DB_USER_PASSWORD
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: aiq-credentials
+              key: DB_USER_NAME
+        envFrom:
+        - secretRef:
+            name: aiq-credentials
+        volumeMounts:
+        - mountPath: "/var/lib/postgresql/data"
+          name: postgres-data
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: false
+      volumes:
+      - name: postgres-data
+        persistentVolumeClaim:
+          claimName: aiq-postgres-data

@@ -1,0 +1,158 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiq-backend
+  namespace: research-agents
+  labels:
+    project: aiq
+    app: aiq-backend
+    component: backend
+  annotations:
+    argocd.argoproj.io/sync-wave: '5'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aiq-backend
+  template:
+    metadata:
+      labels:
+        app: aiq-backend
+        component: backend
+    spec:
+      serviceAccountName: aiq-backend
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+      - command:
+        - sh
+        - "-c"
+        - |
+          echo "Waiting for postgres..."
+          until pg_isready -h aiq-postgres -U $(DB_USER_NAME) -d aiq_jobs; do
+            sleep 2
+          done
+          echo "Running init script..."
+          psql -h aiq-postgres -U $(DB_USER_NAME) -d aiq_jobs -v db_user=$(DB_USER_NAME) -f /db-init/init.sql
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: DB_USER_PASSWORD
+              name: aiq-credentials
+        - name: DB_USER_NAME
+          valueFrom:
+            secretKeyRef:
+              key: DB_USER_NAME
+              name: aiq-credentials
+        image: bitnami/postgresql:latest
+        name: db-init
+        volumeMounts:
+        - mountPath: "/db-init"
+          name: postgres-init
+          readOnly: true
+      containers:
+      - name: backend
+        image: quay.io/tasmith/aiq-backend-redhat:2.1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: "/health"
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: "/health"
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: '2'
+            memory: 4Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        env:
+        - name: ENV
+          value: ''
+        - name: PORT
+          value: '8000'
+        - name: AIQ_CHECKPOINT_DB
+          value: postgresql://$(DB_USER_NAME):$(DB_USER_PASSWORD)@aiq-postgres:5432/aiq_jobs
+        - name: AIQ_CHROMA_DIR
+          value: "/app/data/chroma"
+        - name: AIQ_SUMMARY_DB
+          value: postgresql+asyncpg://$(DB_USER_NAME):$(DB_USER_PASSWORD)@aiq-postgres:5432/aiq_jobs
+        - name: APP_ENV
+          value: production
+        - name: COLLECTION_NAME
+          value: default_collection
+        - name: CONFIG_FILE
+          value: "/app/configs-custom/config_web_vllm.yml"
+        - name: DASK_NTHREADS
+          value: '4'
+        - name: DASK_NWORKERS
+          value: '1'
+        - name: LOG_LEVEL
+          value: INFO
+        - name: MODE
+          value: web
+        - name: NAT_JOB_STORE_DB_URL
+          value: postgresql+asyncpg://$(DB_USER_NAME):$(DB_USER_PASSWORD)@aiq-postgres:5432/aiq_jobs
+        - name: OTEL_EXPORTER_OTLP_CERTIFICATE
+          value: "/etc/ssl/certs/openshift-service-ca.crt"
+        - name: VLLM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aiq-maas-key
+              key: api-key
+        envFrom:
+        - secretRef:
+            name: aiq-credentials
+        # Model wiring (base URLs + model ids) lives in the script-managed
+        # aiq-model-wiring ConfigMap: cluster-domain URLs are environment
+        # specific, and the hosted<->local swap is a live demo beat
+        # (documented exception, like the GPU MachineSets).
+        - configMapRef:
+            name: aiq-model-wiring
+        volumeMounts:
+        - mountPath: "/app/configs-custom"
+          name: vllm-config
+          readOnly: true
+        - mountPath: "/app/data"
+          name: data-storage
+        - mountPath: "/etc/ssl/certs/openshift-service-ca.crt"
+          name: service-ca
+          readOnly: true
+          subPath: service-ca.crt
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: false
+      volumes:
+      - configMap:
+          name: aiq-postgres-init
+        name: postgres-init
+      - configMap:
+          name: aiq-vllm-config
+        name: vllm-config
+      - configMap:
+          name: openshift-service-ca.crt
+        name: service-ca
+      - emptyDir: {}
+        name: data-storage

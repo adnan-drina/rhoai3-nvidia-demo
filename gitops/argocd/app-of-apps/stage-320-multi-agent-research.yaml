@@ -7,7 +7,7 @@ spec:
   project: rhoai-nvidia-demo
   source:
     repoURL: https://github.com/adnan-drina/rhoai3-nvidia-demo.git
-    targetRevision: main
+    targetRevision: feat/stage-120
     path: gitops/stage-320-multi-agent-research
   destination:
     server: https://kubernetes.default.svc
@@ -15,3 +15,9 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 15s
+        factor: 2
+        maxDuration: 3m

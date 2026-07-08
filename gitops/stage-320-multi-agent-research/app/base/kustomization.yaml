@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - cm-aiq-postgres-init.yaml
+  - cm-aiq-vllm-config.yaml
+  - deploy-aiq-backend.yaml
+  - deploy-aiq-frontend.yaml
+  - deploy-aiq-postgres.yaml
+  - namespace.yaml
+  - pvc-aiq-postgres-data.yaml
+  - rbac.yaml
+  - route-aiq-backend.yaml
+  - route-aiq-frontend.yaml
+  - sa-aiq-backend.yaml
+  - sa-aiq-frontend.yaml
+  - sa-aiq-postgres.yaml
+  - service-aiq-backend.yaml
+  - service-aiq-frontend.yaml
+  - service-aiq-postgres.yaml

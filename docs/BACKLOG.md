@@ -54,3 +54,6 @@ Active backlog for the multi-agent research workflows demo implementation.
   namespaced targetModel IDs work, delete the four custom-endpoint
   playground entries and their Secrets (demo-sandbox) and simplify the
   asset page back to catalog rows only.
+- Stage 320 phase B: MLflow tracing (DSC mlflowoperator activation, OBC
+  artifact store, aiq otel tracing block + token secret/RBAC port,
+  redaction on) - acceptance criterion deferred from the initial port.

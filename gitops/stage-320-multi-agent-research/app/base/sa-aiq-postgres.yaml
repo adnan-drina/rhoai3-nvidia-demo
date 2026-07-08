@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: aiq-postgres
+  namespace: research-agents
+  labels:
+    project: aiq
+    app: aiq-postgres
+    component: postgres
+  annotations:
+    argocd.argoproj.io/sync-wave: '5'

@@ -56,3 +56,26 @@ to a specific rh-research ref and record it here when porting.
 
 - Stage 310 (NVIDIA NIM external models)
 - Tavily API key (required for web research); Serper API key (optional)
+
+## Port Record (2026-07-08)
+
+- Source: rh-ai-quickstart/rh-research @ quickstart (5751e85), chart
+  deploy/helm/aiq-rh rendered with values.yaml + values-vllm.yaml and
+  ported to gitops/stage-320-multi-agent-research/app/base (15 objects +
+  namespace + persona RBAC). Helm used as a RENDERING tool only.
+- Upstream images moved to quay.io/tasmith/aiq-{backend,frontend}-redhat:2.1.0
+  (public) - the planned nvcr.io ngc-api pull secret is NOT needed.
+- Model wiring via script-managed ConfigMap aiq-model-wiring (documented
+  exception: cluster-domain URLs + the hosted<->local swap demo beat).
+  Option-2 posture wired today (hosted refs + target ids); local swap
+  pairs: VLLM_*_BASE_URL -> $MAAS/{gpt-oss-120b,nemotron-3-nano-30b-a3b,
+  nemotron-mini-4b-instruct} with model ids equal to those ref names
+  (alignment done in the RHOAIENG-63297 pass).
+- VLLM_API_KEY: Secret aiq-maas-key, minted as ai-researcher
+  ("aiq-research-agent-demo-premium").
+- MLflow tracing: DEFERRED to a follow-up phase (otel block removed from
+  our config copy; upstream templates mlflow-rbac/token + long-lived
+  token secret not ported yet). Acceptance criterion moved to BACKLOG
+  with the OBC artifact-store wiring.
+- RAG_INGEST_URL/RAG_SERVER_URL dropped (rag services not part of this
+  stage's scope).
