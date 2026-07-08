@@ -1,0 +1,98 @@
+# Non-admin persona access to the RHOAI observability surfaces (demo
+# posture; ai-admin gets these via RHOAI adminGroups already).
+# Workload metrics page: kueue reads. Observability dashboard (Perses,
+# per rhoai-observability validation checklist): dashboard/datasource
+# reads in redhat-ods-monitoring + create on the prometheuses/api "k8s"
+# subresource in openshift-monitoring for query POSTs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rhoai-nvidia-demo-kueue-project-view
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+rules:
+  - apiGroups: [kueue.x-k8s.io]
+    resources: [localqueues, workloads]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rhoai-nvidia-demo-kueue-cluster-view
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+rules:
+  - apiGroups: [kueue.x-k8s.io]
+    resources: [clusterqueues, resourceflavors]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rhoai-nvidia-demo-kueue-cluster-view
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rhoai-nvidia-demo-kueue-cluster-view
+subjects:
+  - {kind: Group, apiGroup: rbac.authorization.k8s.io, name: rhoai-demo-users}
+  - {kind: Group, apiGroup: rbac.authorization.k8s.io, name: rhoai-demo-admins}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rhoai-demo-perses-view
+  namespace: redhat-ods-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+rules:
+  - apiGroups: [perses.dev]
+    resources: [persesdashboards, persesdatasources]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rhoai-demo-perses-view
+  namespace: redhat-ods-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rhoai-demo-perses-view
+subjects:
+  - {kind: Group, apiGroup: rbac.authorization.k8s.io, name: rhoai-demo-users}
+  - {kind: Group, apiGroup: rbac.authorization.k8s.io, name: rhoai-demo-admins}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rhoai-demo-prometheus-query
+  namespace: openshift-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+rules:
+  - apiGroups: [monitoring.coreos.com]
+    resources: [prometheuses/api]
+    resourceNames: [k8s]
+    verbs: [get, create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rhoai-demo-prometheus-query
+  namespace: openshift-monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rhoai-demo-prometheus-query
+subjects:
+  - {kind: Group, apiGroup: rbac.authorization.k8s.io, name: rhoai-demo-users}
+  - {kind: Group, apiGroup: rbac.authorization.k8s.io, name: rhoai-demo-admins}

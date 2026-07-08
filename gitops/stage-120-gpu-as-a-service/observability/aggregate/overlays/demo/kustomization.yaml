@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - ../../../dsci-metrics/base
+  - ../../../user-access/base
   - ../../../cluster-observability-operator/operator/overlays/stable-1.4
   - ../../../opentelemetry/operator/overlays/stable
   - ../../../tempo/operator/overlays/stable
