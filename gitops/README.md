@@ -1,24 +1,25 @@
 # GitOps Source Tree
 
-This directory contains the active GitOps manifests for the RHOAI NVIDIA demo.
+Kustomize manifests synced to the cluster by ArgoCD. Each stage directory maps
+to an ArgoCD Application in `argocd/app-of-apps/`.
 
 ## Layout
 
 ```text
 gitops/
-├── bootstrap/                    # ArgoCD operator and instance bootstrap
-│   ├── base/                     # Subscription + OperatorGroup
+├── bootstrap/                           ArgoCD operator and instance bootstrap
+│   ├── base/                            Subscription + OperatorGroup
 │   └── overlays/
-│       ├── operator/             # GitOps operator channel pin
-│       └── demo/                 # ArgoCD instance, AppProject, cluster-admin
+│       ├── operator/                    GitOps operator channel pin
+│       └── demo/                        ArgoCD instance, AppProject, cluster-admin
 ├── argocd/
-│   └── app-of-apps/              # ArgoCD Application manifests (one per stage)
-├── stage-110-rhoai-base-platform/
-├── stage-120-gpu-as-a-service/
-├── stage-210-model-serving-foundation/
-├── stage-220-models-as-a-service/
-├── stage-310-nvidia-nim-agents/
-└── stage-320-multi-agent-research/
+│   └── app-of-apps/                     ArgoCD Application manifests (one per stage)
+├── stage-110-rhoai-base-platform/       ODF MCG, RHOAI operator + instance CRs, Model Registry
+├── stage-120-gpu-as-a-service/          NFD, GPU Operator, ClusterPolicy, Kueue, hardware profiles
+├── stage-210-model-serving-foundation/  KServe activation, RHCL/Kuadrant, Gateway, Grafana, LLMISVCs
+├── stage-220-models-as-a-service/       MaaS DB, model registrations, subscriptions, dashboard flags
+├── stage-310-nvidia-nim-agents/         Hosted NVIDIA ExternalModels, subscription tiers, AuthPolicies
+└── stage-320-multi-agent-research/      AI-Q backend + frontend + PostgreSQL, console link, dashboard tile
 ```
 
 ## Conventions

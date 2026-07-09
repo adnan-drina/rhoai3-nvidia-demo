@@ -42,30 +42,25 @@ OpenShift Cluster
 │   ├── mig-3g-40gb      → nvidia.com/mig-3g.40gb
 │   ├── mig-2g-20gb      → nvidia.com/mig-2g.20gb
 │   └── mig-1g-10gb      → nvidia.com/mig-1g.10gb
-└── DSC Kueue: Unmanaged (CoP component patch)
+└── DSC Kueue: Unmanaged (CoP component patch from stage-110)
 ```
 
-## Deployment Model
+`deploy.sh` generates the two GPU MachineSets from the live worker template
+(cluster-specific infra ID, AMI, and subnet) and creates the ArgoCD
+Application. MachineSets are script-managed infrastructure, not
+ArgoCD-managed. Everything else — NFD and GPU Operator subscriptions,
+ClusterPolicy, Kueue operator + CR, ClusterQueue, LocalQueue, and the four
+hardware profiles — is delivered by the ArgoCD Application syncing
+`gitops/stage-120-gpu-as-a-service/`.
 
-- `deploy.sh` generates the two GPU MachineSets from the live worker
-  template (cluster-specific infra ID, AMI, and subnet) and creates the
-  ArgoCD Application pointing at `gitops/stage-120-gpu-as-a-service/`.
-  MachineSets are script-managed infrastructure, not ArgoCD-managed.
-- Everything else is delivered by the ArgoCD Application: NFD and GPU
-  Operator subscriptions, ClusterPolicy, Kueue operator + CR, ClusterQueue,
-  LocalQueue, and the four hardware profiles.
-- DSC Kueue enablement uses a Composition-of-Patches (CoP) component in the
-  stage-110 RHOAI instance overlay — `Unmanaged` with the default queue
-  names, since `Managed` is rejected at runtime in RHOAI 3.4.
+## What It Looks Like
 
-## Deployed State
+Once deployed, the stage adds GPU-as-a-Service capabilities on top of the
+stage-110 foundation. GPU-dependent features (driver installation, MIG
+partitioning, allocatable resources) activate automatically when GPU nodes
+join the cluster.
 
-Once fully deployed, the stage adds GPU-as-a-Service capabilities on top of
-the stage-110 foundation. GPU-dependent acceptance criteria (driver
-installation, MIG partitioning, allocatable resources) activate automatically
-when GPU nodes join the cluster.
-
-### ArgoCD Applications — Both Stages Synced & Healthy
+### ArgoCD Applications
 
 Both `stage-110-rhoai-base-platform` and `stage-120-gpu-as-a-service`
 Applications are synced from Git with auto-sync enabled.
@@ -77,7 +72,7 @@ Applications are synced from Git with auto-sync enabled.
 The `stage-120-gpu-as-a-service` Application manages NFD, GPU Operator,
 Kueue, ClusterQueue, LocalQueue, and all four hardware profiles.
 
-![ArgoCD stage-120 application detail — Healthy, Synced, Sync OK](../docs/assets/demos/stage-120/argocd-app-synced.png)
+![ArgoCD stage-120 application detail](../docs/assets/demos/stage-120/argocd-app-synced.png)
 
 ### Hardware Profiles in RHOAI Dashboard
 

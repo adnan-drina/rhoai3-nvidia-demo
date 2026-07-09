@@ -2,39 +2,59 @@
 
 ## Why
 
-Multi-agent research workflows benefit from specialized inference
-microservices optimized for different tasks. NVIDIA NIM provides
-production-ready, GPU-optimized containers for LLM inference, embedding,
-and retrieval that serve as the computational backbone for agent workloads.
+Multi-agent research workflows need frontier models for orchestration,
+reasoning, and summarization. NVIDIA provides these models through the
+[API Catalog](https://build.nvidia.com/) as hosted NIM endpoints, and through
+downloadable NIM containers for local GPU-accelerated inference. This stage
+registers hosted NVIDIA models as governed MaaS endpoints so that agent
+applications can consume them through the same gateway, API keys, and rate
+limits as locally-served models — making it trivial to swap between hosted and
+local inference when GPU capacity changes.
 
 ## What
 
-- **NVIDIA NIM** microservices deployed on OpenShift with GPU scheduling
-- **NGC pull credentials** for accessing NIM container images
-- **NIM endpoints** registered through MaaS for governed agent access
-- **Agent-optimized models** for reasoning, coding, and research tasks
+- **Hosted NVIDIA models** registered as `ExternalModel` resources through the
+  MaaS gateway — `gpt-oss-120b`, `nemotron-super-120b`, `nemotron-nano-30b`,
+  and `nemotron-mini-4b` via `integrate.api.nvidia.com`
+- **NVIDIA API credentials** secret for hosted NIM access, labeled for
+  gateway-level credential injection
+- **MaaS subscriptions** — two tiers with per-model token rate limits:
+  - `demo-standard`: research and summarization models
+  - `demo-premium`: orchestrator and frontier models
+- **Kuadrant AuthPolicies** per tier for gateway-enforced authentication
+  and rate limiting
+
+When GPU nodes are available, the local `LLMInferenceService` endpoints from
+stage 210 serve the same model names. Agents see no difference — the MaaS
+gateway routes to whichever backend is live.
 
 ## Architecture
 
 ```text
 OpenShift Cluster
-├── nvidia-nim-agents namespace
-│   ├── NIM LLM Inference (reasoning model)
-│   ├── NIM Embedding Service
-│   └── NGC pull secrets
-├── MaaS Gateway (Stage 220)
-│   └── NIM models registered as MaaS endpoints
-└── Kueue (Stage 120)
-    └── GPU scheduling for NIM workloads
+├── models-as-a-service namespace
+│   ├── ExternalModel: gpt-oss-120b-hosted      → integrate.api.nvidia.com
+│   ├── ExternalModel: nemotron-super-120b-hosted
+│   ├── ExternalModel: nemotron-nano-30b-hosted
+│   ├── ExternalModel: nemotron-mini-4b-hosted
+│   ├── MaaSSubscription: demo-standard (research models, rate-limited)
+│   ├── MaaSSubscription: demo-premium  (orchestrator + frontier models)
+│   ├── AuthPolicy: standard-tier
+│   ├── AuthPolicy: premium-tier
+│   └── Secret: nvidia-api-credentials
+├── MaaS Gateway (Stage 210)
+│   └── Routes to hosted or local backends per model name
+└── Local LLMInferenceServices (Stage 210, GPU-dependent)
+    └── Same model names — agents swap transparently
 ```
 
 ## Official Documentation
 
 - [NVIDIA NIM](https://docs.nvidia.com/nim/)
-- [NVIDIA NGC Catalog](https://catalog.ngc.nvidia.com/)
-- [Deploying models on RHOAI](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.4/html-single/deploying_models/index)
+- [NVIDIA API Catalog](https://build.nvidia.com/)
+- [Govern LLM access with Models-as-a-Service](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.4/html-single/govern_llm_access_with_models-as-a-service/index)
 
 ## Prerequisites
 
-- Stage 220 deployed and validated (MaaS gateway available)
-- NVIDIA API key configured in `.env`
+- Stage 220 deployed and validated (MaaS gateway and API ready)
+- `NVIDIA_API_KEY` configured in `.env`

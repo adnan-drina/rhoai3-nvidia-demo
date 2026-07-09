@@ -21,33 +21,29 @@ This stage establishes the foundation that all subsequent stages build upon:
 ```text
 OpenShift Cluster
 ├── openshift-gitops (ArgoCD)
-├── openshift-storage (ODF MCG)
-├── redhat-ods-operator (RHOAI)
-├── rhoai-model-registries
-└── demo-sandbox
+│   └── stage-110-rhoai-base-platform Application
+│       ├── ODF operator (stable-4.20) + standalone MCG StorageCluster
+│       ├── RHOAI operator (stable-3.4)
+│       ├── DSCInitialization + DataScienceCluster
+│       └── Model Registry (demo-registry)
+├── openshift-storage (ODF MCG — S3-compatible object storage)
+├── redhat-ods-operator (RHOAI control plane)
+├── rhoai-model-registries (demo-registry + MySQL backend)
+└── demo-sandbox (workload namespace)
 ```
 
-## Deployment Model
+`deploy.sh` bootstraps the one layer ArgoCD cannot manage for itself: the
+OpenShift GitOps operator, the ArgoCD instance (`resourceTrackingMethod:
+annotation`), the `rhoai-nvidia-demo` AppProject, and the controller
+cluster-admin binding. Everything else is delivered by the ArgoCD Application
+syncing `gitops/stage-110-rhoai-base-platform/` from Git.
 
-- `deploy.sh` bootstraps the one layer ArgoCD cannot manage for itself:
-  the OpenShift GitOps operator, the ArgoCD instance
-  (`resourceTrackingMethod: annotation`), the `rhoai-nvidia-demo`
-  AppProject, and the controller cluster-admin binding (demo-only,
-  documented in `docs/OPERATIONS.md`).
-- Everything else is delivered by the `stage-110-rhoai-base-platform`
-  ArgoCD Application syncing `gitops/stage-110-rhoai-base-platform/` from
-  Git: ODF operator (`stable-4.20`), RHOAI operator pinned to the
-  `stable-3.4` channel, then the verified instance CRs (standalone MCG
-  StorageCluster, DSCInitialization, DataScienceCluster, Model Registry).
-- KServe serving configuration arrives in Stage 210 and Kueue in Stage 120;
-  this stage keeps those components at their defaults.
+## What It Looks Like
 
-## Deployed State
+Once deployed, the stage delivers a healthy GitOps-managed foundation with all
+operators reconciled and instance CRs ready.
 
-Once fully deployed, the stage delivers a healthy GitOps-managed foundation
-with all operators reconciled and instance CRs ready.
-
-### ArgoCD Application — Synced & Healthy
+### ArgoCD Application
 
 The single `stage-110-rhoai-base-platform` Application manages all platform
 resources from Git. Auto-sync is enabled; any drift is self-healed.
@@ -58,12 +54,11 @@ resources from Git. Auto-sync is enabled; any drift is self-healed.
 
 The RHOAI Dashboard is accessible to demo users (`ai-admin`, `ai-developer`,
 `ai-researcher`) via the htpasswd identity provider configured by
-`setup-access.sh`. Admin users see project management, learning resources,
-and platform settings.
+`setup-access.sh`.
 
 ![RHOAI Dashboard home page logged in as ai-admin](../docs/assets/demos/stage-110/rhoai-dashboard.png)
 
-### Model Registry — Available
+### Model Registry
 
 The `demo-registry` Model Registry instance is backed by an in-cluster MySQL
 database and reports Available status in the RHOAI Dashboard settings.
