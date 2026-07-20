@@ -1,17 +1,16 @@
 # Backlog
 
-Active backlog for the multi-agent research workflows demo implementation.
+Active backlog for the multi-agent research workflows demo.
 
-## Active Work
+## Documentation
 
-- [ ] Stage 110 - RHOAI Base Platform implementation
-- [ ] Stage 120 - GPU as a Service implementation
-- [ ] Stage 210 - Model Serving Foundation implementation
-- [ ] Stage 220 - Models as a Service implementation
-- [ ] Stage 310 - NVIDIA NIM Agents implementation
-- [ ] Stage 320 - Multi-Agent Research Workflows implementation
+- [ ] **Demo Walkthrough screenshots for stages 210-320** — stages 110 and
+  120 have deployed-state screenshots in their Demo Walkthrough sections;
+  stages 210, 220, 310, and 320 need equivalent screenshots captured from
+  the live cluster (ArgoCD app detail, RHOAI Dashboard views, Gen AI Studio,
+  AI-Q frontend, Grafana dashboards).
 
-## Future Work
+## Deferred
 
 - **Agent evaluation stage (former Stage 330)** — removed from active scope
   (user decision, 2026-07-07) because the rh-research quickstart does not
@@ -25,35 +24,29 @@ Active backlog for the multi-agent research workflows demo implementation.
   collector), and a guardrails approach (RHOAI TrustyAI guardrails or NeMo
   Guardrails once upstream integrates it).
 
+- **Stage 320 phase B: MLflow tracing** — DSC mlflowoperator activation, OBC
+  artifact store, aiq otel tracing block + token secret/RBAC port, redaction
+  on. Acceptance criterion deferred from the initial port.
+
+- **On-cluster NIM microservices** — NVIDIA RAG Blueprint FRAG knowledge
+  layer via local NIM containers (see stage-310 PLAN.md deferred section;
+  needs GPU capacity beyond the 2x p5.4xlarge layout).
+
+- **Distributed tracing for agents** — Tempo + OpenTelemetry collector +
+  distributed-tracing UIPlugin; DSCI monitoring.traces. Relevant for
+  stage 320 agent debugging (rhoai3-demo stage-240 pattern).
+
+- **Stage 320 storage wiring** — MLflow artifact-store OBC (+ Tempo S3 OBC
+  when tracing is ported) against openshift-storage.noobaa.io StorageClass.
+
 ## Future Considerations
 
-- Advanced agent memory and context management
-- Cross-cluster agent federation
-- Agent workflow versioning and rollback
-- Production-grade agent monitoring dashboards
-- On-cluster NIM microservices via the NVIDIA RAG Blueprint FRAG knowledge
-  layer (see stage-310 PLAN.md deferred section; needs GPU capacity beyond
-  the 2x p5.4xlarge layout)
-
-## Observability follow-ups (identified 2026-07-08, aligned with reference projects)
-
-- Port the proven Grafana model-serving stack from rhoai3-demo /
-  rhoai3-coding-demo stage-210/030 (Grafana operator + instance,
-  openshift-monitoring datasource + cluster-monitoring-view RBAC, vLLM
-  KServe/GPU + LLM performance dashboards, console link). This is the
-  references' primary Observe & monitor implementation; ours currently
-  covers the RHOAI-native path (COO + DSCI metrics + Perses dashboard).
-- Distributed tracing for agents (rhoai3-demo stage-240 pattern): Tempo +
-  OpenTelemetry collector + distributed-tracing UIPlugin; DSCI
-  monitoring.traces. Relevant for stage 320 agent debugging.
-- MCP servers for the AI asset endpoints MCP tab (rhoai3-demo mcp/base).
-- Stage 320 storage wiring: MLflow artifact-store OBC (+ Tempo S3 OBC when
-  tracing is ported) against openshift-storage.noobaa.io StorageClass.
 - RHOAI 3.5 upgrade follow-ups (RHOAIENG-63297 fixed in 3.5 MaaS API):
   re-test the native MaaS playground flow for hosted NVIDIA models; if
   namespaced targetModel IDs work, delete the four custom-endpoint
   playground entries and their Secrets (demo-sandbox) and simplify the
   asset page back to catalog rows only.
-- Stage 320 phase B: MLflow tracing (DSC mlflowoperator activation, OBC
-  artifact store, aiq otel tracing block + token secret/RBAC port,
-  redaction on) - acceptance criterion deferred from the initial port.
+- MCP servers for the AI asset endpoints MCP tab (rhoai3-demo mcp/base).
+- Advanced agent memory and context management.
+- Cross-cluster agent federation.
+- Agent workflow versioning and rollback.

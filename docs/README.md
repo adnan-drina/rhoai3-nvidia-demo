@@ -11,8 +11,8 @@ This directory contains promoted project documentation.
 
 ## Documentation Conventions
 
-- Stage READMEs provide concise Why/What content for a technical audience,
-  not deployment runbooks.
+- Stage READMEs provide concise context and building blocks for a
+  technical audience, not deployment runbooks.
 - Operations content belongs in [OPERATIONS.md](OPERATIONS.md).
 - Failure recovery belongs in [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 - Code, manifests, scripts, validation, and docs must stay aligned.

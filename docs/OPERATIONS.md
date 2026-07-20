@@ -1,18 +1,23 @@
 # Operations
 
-This document will contain the active operating model, deployment order,
-validation strategy, and day-2 operational notes once stages are implemented.
+Deployment order, day-2 operational notes, and environment-specific records
+for the multi-agent research workflows demo.
 
 ## Deployment Order
 
 Stages must be deployed in numerical order:
 
-1. Stage 110 - RHOAI Base Platform (GitOps bootstrap, ODF, RHOAI operator)
-2. Stage 120 - GPU as a Service (GPU worker, NFD, GPU Operator, Kueue)
-3. Stage 210 - Model Serving Foundation (KServe, model endpoint)
-4. Stage 220 - Models as a Service (MaaS governance)
-5. Stage 310 - NVIDIA NIM Agents (NIM microservices)
-6. Stage 320 - Multi-Agent Research (agent orchestration)
+1. Stage 110 — RHOAI Base Platform (GitOps bootstrap, ODF, RHOAI operator)
+2. Stage 120 — GPU as a Service (GPU worker, NFD, GPU Operator, Kueue)
+3. Stage 210 — Model Serving Foundation (KServe, gateway, Kuadrant, Grafana)
+4. Stage 220 — Models as a Service (MaaS governance, Gen AI Studio)
+5. Stage 310 — NVIDIA NIM Agents (hosted NVIDIA models via MaaS)
+6. Stage 320 — Multi-Agent Research (AI-Q research assistant)
+
+## Validation Strategy
+
+Each stage provides a `validate.sh` script that checks component health.
+Run validation after each stage deployment before proceeding to the next.
 
 ## Stage 110 Operating Notes
 
@@ -25,72 +30,16 @@ Stages must be deployed in numerical order:
   to `cluster-admin` (`gitops/bootstrap/overlays/demo/argocd-rbac.yaml`) so
   stage Applications can manage operators, CRDs, and cluster-scoped CRs.
   Acceptable for this demo per AGENTS.md; not a production pattern.
-- **Branch pinning**: during active stage development the stage Application
-  `targetRevision` may pin to the working branch (currently
-  `feat/stage-110`); restore to `main` when the stage stabilizes.
 - **Channel pins**: RHOAI Subscription pins `stable-3.4`; ODF pins
   `stable-4.20` (see `docs/PLATFORM_BASELINE.md`).
 - **Cluster guard**: every deploy/validate script sources `.env` and refuses
   to run unless `oc whoami --show-server` matches
   `RHOAI_EXPECTED_API_SERVER`.
 
-## Stage 120 AWS-Side Resources (outside GitOps)
-
-Created 2026-07-07 with the sandbox AWS credentials to reach p5.4xlarge
-capacity (us-east-2c had none; AWS pointed to 2a/2b):
-
-- Private subnets in the cluster VPC (`vpc-0dfea38bd1924bcfe`), tagged like
-  the installer subnet and associated to the private route table
-  (`rtb-006feaf008e66dcde`, NAT in 2c — cross-AZ NAT data charges apply):
-  - `cluster-48jqq-hsxrr-subnet-private-us-east-2a` = `subnet-0370a9a14f6b8b07b` (10.0.128.0/20)
-  - `cluster-48jqq-hsxrr-subnet-private-us-east-2b` = `subnet-08af499dafecb8123` (10.0.144.0/20)
-- GPU MachineSet AZ targeting via `.env`: `RHOAI_GPU_FULL_AZ=us-east-2a`,
-  `RHOAI_GPU_MIG_AZ=us-east-2b` (stage-120 `deploy.sh` overrides placement
-  and subnet filter per role).
-- These subnets are not managed by the RHDP stack; delete them (and the
-  route-table associations) before environment teardown if RHDP cleanup
-  reports a VPC dependency error.
-
-## Validation Strategy
-
-Each stage provides a `validate.sh` script that checks component health.
-Run validation after each stage deployment before proceeding to the next.
-
-## Day-2 Operations
-
-_To be documented as stages are implemented._
-
-## Node Disk Pressure / Evicted Pod Corpses (RESOLVED 2026-07-08; root cause confirmed)
-
-Root cause (KubeNodeEviction): LLMInferenceService router-scheduler pods
-are CPU workloads; with predictors Pending on GPU capacity, the
-router-schedulers landed on workers, were evicted on ephemeral-storage
-pressure, and were recreated in a loop. Each cycle left dead-pod
-filesystem artifacts; 431+ stale pods on one node filled the 100GB /var
-and blocked kubelet image GC. Resolution: delete stale pods, scale the
-source LLMIS to replicas 0 (see env-manage-resources), drain + let
-kubelet GC recover, uncordon. Prevention: LLMIS stay at replicas 0 until
-GPU nodes join; Application ignoreDifferences on /spec/replicas.
-
-## Node Disk Pressure / Evicted Pod Corpses (original runbook)
-
-Symptom: a component (e.g., rhods-dashboard) accumulates hundreds of
-Failed/ContainerStatusUnknown pods; `oc` list commands time out; one node
-reports `DiskPressure=True` (heavy operator image pulls on small workers).
-
-Runbook:
-1. `oc get nodes -o custom-columns=...DiskPressure...` to find the node.
-2. Delete corpses: `oc delete pods -n <ns> --field-selector=status.phase=Failed`
-   (and `=Succeeded`); they are records, not workloads.
-3. Kubelet image GC responds to the pressure signal automatically; to
-   accelerate: `oc debug node/<node> -- chroot /host crictl rmi --prune`.
-4. Consider larger workers if pressure recurs (m6a.4xlarge is tight for
-   RHOAI + ODF + MaaS + GPU operator image sets).
-
-## Operator Lifecycle Pins (authoritative; verify BEFORE authoring any Subscription)
+## Operator Lifecycle Pins
 
 Any new operator Subscription MUST be checked against this table, the
-relevant rhoai-*/ocp-* skill, and the reference projects (rhoai3-demo,
+relevant rhoai-\*/ocp-\* skill, and the reference projects (rhoai3-demo,
 rhoai3-coding-demo) BEFORE commit. Pinned entries use Manual approval +
 an approve-installplan Job that only approves the pinned CSV.
 
@@ -106,47 +55,31 @@ an approve-installplan Job that only approves the pinned CSV.
 | leader-worker-set | stable-v1.0 | channel-pinned | LLMIS dependency |
 | openshift-cert-manager-operator | stable-v1 | adopt existing install | RHCL prerequisite; RHDP-preinstalled on some sandboxes |
 
-## Object Storage (S3) Consumption Model (analysed 2026-07-08)
+## Object Storage (S3) Consumption Model
 
 MCG standalone (stage 110) provides S3: NooBaa `Ready`, default backing
 store type `aws-s3`, S3 route `s3-openshift-storage.apps.<domain>`, and
 the `openshift-storage.noobaa.io` StorageClass. Consumers claim buckets
-with ObjectBucketClaims (OBC) in their own stage - none exist until a
+with ObjectBucketClaims (OBC) in their own stage — none exist until a
 component needs one, so the cluster legitimately shows no buckets today.
 
 RHOAI 3.4 object-storage requirements relevant to this demo:
-- Model registry: does NOT use S3 - requires a database (our MySQL,
+
+- Model registry: does NOT use S3 — requires a database (our MySQL,
   validated). Artifact URIs point at OCI modelcars / HF.
 - AI pipelines: needs S3 (component is Removed in our DSC).
 - MLflow (stage 320): artifact store -> OBC to create in stage 320.
 - TempoStack traces (backlog): S3 backend -> OBC when ported.
 - Workbench data connections: optional, per-demo content.
 
-## AWS-side records: cluster-52lrs GPU-search subnets (2026-07-08)
-
-Hand-made private subnets for multi-AZ p5.4xlarge search (delete BEFORE
-RHDP teardown - see 48jqq lesson): tagged demo.rhoai.io/hand-made=true,
-Name $INFRA-subnet-private-us-east-2b (10.0.128.0/20) and -us-east-2c
-(10.0.144.0/20), associated to the private route table.
-Cleanup: aws ec2 describe-subnets --filters Name=tag:demo.rhoai.io/hand-made,Values=true
-then disassociate + delete-subnet each.
-
-## OLM: Subscription Healthy But No InstallPlan (observed 2026-07-08)
-
-If a Subscription shows healthy catalog sources but status.state stays
-empty and no InstallPlan appears: check for MULTIPLE OperatorGroups in
-the namespace (`oc get operatorgroup -n <ns>`). OLM stalls silently with
-more than one. Delete the stray OG; resolution resumes within a minute.
-
 ## GPU Arrival Day Runbook
 
-When a p5.4xlarge Machine reaches Running (machinesets hunt in
-us-east-2b/2c; 2a exhausted):
+When a p5.4xlarge Machine reaches Running:
 
 1. Node joins with the MIG label from its MachineSet
    (gpu-full=all-disabled, gpu-mig=all-balanced); GPU operator applies
    MIG; verify `oc get nodes -l node-role.kubernetes.io/gpu` allocatable
-   shows nvidia.com/gpu or mig-* resources.
+   shows nvidia.com/gpu or mig-\* resources.
 2. Scale local models: for m in gpt-oss-120b nemotron-3-nano-30b-a3b
    nemotron-mini-4b-instruct: `oc patch llminferenceservice $m -n
    models-as-a-service --type merge -p '{"spec":{"replicas":1}}'`
@@ -161,3 +94,15 @@ us-east-2b/2c; 2a exhausted):
    those ref names) and restart deploy/aiq-backend. Hosted wiring remains
    the documented fallback (Option 2).
 5. Re-run validate.sh for stages 120/210/320.
+
+## Environment-Specific Records
+
+### AWS GPU Subnets (cluster-specific)
+
+GPU MachineSets may need subnets in specific AZs depending on p5.4xlarge
+capacity. Stage 120 `deploy.sh` supports `RHOAI_GPU_FULL_AZ` and
+`RHOAI_GPU_MIG_AZ` overrides in `.env`.
+
+If hand-made subnets were created for multi-AZ GPU search, tag them with
+`demo.rhoai.io/hand-made=true` and delete them before environment
+teardown to avoid VPC dependency errors during RHDP cleanup.
