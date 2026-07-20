@@ -1,15 +1,19 @@
 # Multi-Agent Research Workflows with Red Hat AI and NVIDIA
 
-Enterprise research teams need governed, observable, and repeatable AI agent
-workflows that coordinate multiple specialized models to solve complex research
-tasks. This demo builds that capability layer by layer on
-**Red Hat OpenShift AI 3.4** and **OpenShift 4.20**, using NVIDIA NIM
-microservices and agent frameworks for the agentic AI tier.
+Enterprise AI is moving from single-model chatbots to multi-agent systems that
+coordinate specialized models, call external tools, and run asynchronous
+research — all under governance controls that make every inference call
+authenticated, metered, and auditable. This demo builds that capability layer
+by layer on **Red Hat OpenShift AI 3.4** and **OpenShift 4.20**, using NVIDIA
+models and agent frameworks from the
+[Red Hat AI Factory with NVIDIA](https://www.redhat.com/en/products/ai/factory-with-nvidia)
+co-engineering partnership.
 
 The result is an **AI-Q Research Assistant** — a multi-agent system that answers
 conversational questions, produces cited shallow research, and runs asynchronous
-deep-research reports — with every model call governed by a Models-as-a-Service
-gateway.
+deep-research reports — with every model call governed through a
+Models-as-a-Service gateway that provides API key management, subscription-tier
+rate limits, and usage tracking.
 
 ## Demo Stages
 
@@ -27,14 +31,14 @@ and can be deployed independently on top of its prerequisites.
 
 | Stage | What it delivers |
 |-------|------------------|
-| [Stage 210 — Model Serving Foundation](stage-210-model-serving-foundation/) | KServe serving platform, vLLM runtime, Grafana inference dashboards |
-| [Stage 220 — Models as a Service](stage-220-models-as-a-service/) | MaaS gateway for governed LLM access, local and external model routing, API key management |
+| [Stage 210 — Model Serving Foundation](stage-210-model-serving-foundation/) | KServe model serving, Gateway API ingress, Kuadrant AuthN/AuthZ, Grafana inference dashboards, LLMInferenceService definitions |
+| [Stage 220 — Models as a Service](stage-220-models-as-a-service/) | MaaS governance layer with Gen AI Studio, subscription tiers, API key management, usage tracking |
 
 ### Agentic AI and Multi-Agent Research
 
 | Stage | What it delivers |
 |-------|------------------|
-| [Stage 310 — NVIDIA NIM Agents](stage-310-nvidia-nim-agents/) | NVIDIA NIM microservices for LLM inference, registered through MaaS |
+| [Stage 310 — NVIDIA NIM Agents](stage-310-nvidia-nim-agents/) | Hosted NVIDIA models registered as governed MaaS endpoints, transparent hosted-to-local swap |
 | [Stage 320 — Multi-Agent Research](stage-320-multi-agent-research/) | AI-Q research assistant with conversational, shallow-research, and deep-research workflows |
 
 ## Architecture Overview
@@ -42,7 +46,7 @@ and can be deployed independently on top of its prerequisites.
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  AI-Q Research Assistant (Stage 320)                            │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │
+│  ┌──────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │
 │  │ Conversation │  │   Shallow   │  │   Deep Research         │ │
 │  │   (intent)   │  │  Research   │  │  (orchestrator + tools) │ │
 │  └──────┬───────┘  └──────┬──────┘  └────────────┬────────────┘ │
@@ -51,7 +55,7 @@ and can be deployed independently on top of its prerequisites.
 │  API keys · rate limits · per-model routing · usage tracking    │
 ├─────────────────────────────────────────────────────────────────┤
 │  Model Serving (Stages 210 + 310)                               │
-│  KServe/vLLM local endpoints  ·  NVIDIA NIM microservices       │
+│  KServe/vLLM local endpoints  ·  Hosted NVIDIA NIM endpoints    │
 ├─────────────────────────────────────────────────────────────────┤
 │  GPU as a Service (Stage 120)                                   │
 │  H100 full + MIG partitioning · Kueue quotas · hardware profiles│
@@ -107,6 +111,8 @@ Deploy stages in order. Each stage README explains what it delivers and why:
 | Red Hat OpenShift Data Foundation | 4.20 |
 | NVIDIA GPU Operator | v26.3 |
 | Red Hat build of Kueue | 1.3 |
+| Red Hat Connectivity Link (Kuadrant) | 1.3 |
+| cert-manager | 1.x |
 
 See [docs/PLATFORM_BASELINE.md](docs/PLATFORM_BASELINE.md) for the full
 baseline, version-match rules, and official documentation index.

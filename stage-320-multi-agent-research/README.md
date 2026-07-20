@@ -2,11 +2,19 @@
 
 ## Why
 
-This is the demo's destination: an AI-Q Research Assistant that answers
-conversational questions, produces cited shallow research, and runs
-asynchronous deep-research reports. Every model call flows through the
-Models-as-a-Service gateway built in stages 110-310 — governed by per-model
-endpoints, persona-owned API keys, and subscription tier rate limits.
+Enterprise AI is progressing from single-model chatbots through
+retrieval-augmented generation to multi-agent systems where specialized models
+collaborate on complex tasks. This stage is the demo's destination — an AI-Q
+Research Assistant that answers conversational questions, produces cited shallow
+research, and runs asynchronous deep-research reports using the NVIDIA AI-Q
+Blueprint.
+
+Every model call flows through the Models-as-a-Service gateway built in stages
+110-310. The research assistant authenticates with its own API key, scoped to a
+subscription tier with per-model rate limits and usage tracking. This proves
+every governance layer works end to end: GitOps-managed infrastructure, GPU
+scheduling, model serving, gateway authentication, and consumption metering —
+all visible and auditable from a single platform.
 
 ## What
 

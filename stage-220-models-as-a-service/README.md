@@ -2,11 +2,18 @@
 
 ## Why
 
-Enterprise multi-agent workflows need governed model access where every
-inference call is authenticated, metered, and auditable. Models as a Service
-(MaaS) decouples agent applications from individual model endpoints — agents
-consume a single gateway URL with an API key, and the platform handles routing,
-rate limiting, usage tracking, and model registration behind the scenes.
+Deploying a model is not the same as running a governed AI service. Without a
+governance layer, teams create direct connections to individual model endpoints,
+credentials scatter across namespaces, and usage becomes invisible — the
+conditions that produce shadow AI in enterprise environments.
+
+Models as a Service (MaaS) turns the serving infrastructure into a private
+internal AI API. Developers and agents consume a single gateway URL with an
+API key scoped to a subscription tier. The platform handles authentication,
+per-model routing, token rate limiting, and usage tracking behind the scenes.
+When a new model is added or a backend swaps from hosted to local inference, no
+consumer configuration changes — MaaS governs what is available, who can use it,
+and how much they can consume.
 
 ## What
 

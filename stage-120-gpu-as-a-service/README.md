@@ -2,11 +2,17 @@
 
 ## Why
 
-Multi-agent research workflows require GPU-accelerated inference for large
-language models. Enterprise GPU management needs fair scheduling, quota
-enforcement, and hardware abstraction so multiple teams can share GPU resources.
-MIG (Multi-Instance GPU) lets a single H100 serve multiple models concurrently,
-maximizing utilization without cross-tenant interference.
+Accelerator capacity is scarce and expensive. Without platform-level governance,
+GPU allocation becomes an unmanaged, first-come-first-served race that leaves
+some teams idle and others starved. GPU-as-a-Service exposes accelerator
+capacity through governed access, scheduling, quotas, and hardware abstraction
+so the platform — not individual users — controls who gets GPU time and how much.
+
+MIG (Multi-Instance GPU) multiplies the value of each physical GPU by letting a
+single H100 serve multiple models concurrently with hardware-level isolation.
+Combined with Kueue quota management and RHOAI hardware profiles, this stage
+turns raw GPU hardware into a self-service accelerator platform where workloads
+request the GPU tier they need and the scheduler enforces fair sharing.
 
 ## What
 

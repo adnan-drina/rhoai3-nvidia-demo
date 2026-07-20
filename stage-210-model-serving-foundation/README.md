@@ -2,12 +2,17 @@
 
 ## Why
 
-Multi-agent research workflows need reliable, high-performance model endpoints
-with authentication, observability, and gateway-level routing. This stage
-builds the full serving infrastructure — KServe for model lifecycle, Gateway API
-for unified ingress, Kuadrant for authentication and rate limiting, and Grafana
-for inference dashboards — so that stages 220-320 can focus on governance and
-agent logic rather than plumbing.
+Installing an AI operator is not the same as having a production inference
+platform. Models need authenticated endpoints, TLS termination, gateway-level
+routing, rate limiting, and observability before they can serve real workloads.
+This stage builds the full serving infrastructure so that models are accessible,
+protected, and measurable from day one — and so that the governance layers in
+stages 220-320 can focus on policy and agent logic rather than plumbing.
+
+The serving stack follows the KServe + vLLM architecture that Red Hat
+OpenShift AI uses for Kubernetes-native LLM serving, extended with Gateway API
+for unified ingress and Red Hat Connectivity Link (Kuadrant) for
+gateway-enforced authentication and rate limiting.
 
 ## What
 

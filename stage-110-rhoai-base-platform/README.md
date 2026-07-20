@@ -2,9 +2,13 @@
 
 ## Why
 
-Every enterprise AI platform needs a governed, repeatable foundation. GitOps
-ensures that platform state is declarative, auditable, and recoverable. Red Hat
-OpenShift AI provides the managed AI/ML platform layer on top of OpenShift.
+Every enterprise AI platform needs a governed, repeatable foundation before
+models can be served and agents can run. GitOps ensures that platform state is
+declarative, auditable, and recoverable — so the AI platform behaves like
+infrastructure, not a one-off experiment. Red Hat OpenShift AI provides the
+managed AI/ML platform layer on top of OpenShift, unifying model serving,
+workbench management, hardware acceleration, and governed model access under
+a single operator-managed lifecycle.
 
 ## What
 
@@ -68,6 +72,7 @@ database and reports Available status in the RHOAI Dashboard settings.
 ## Official Documentation
 
 - [Installing OpenShift AI Self-Managed](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.4/html/installing_and_uninstalling_openshift_ai_self-managed)
+- [Managing OpenShift AI](https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/3.4/html/managing_openshift_ai)
 - [OpenShift GitOps](https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/gitops/index)
 - [ODF 4.20](https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.20/)
 
