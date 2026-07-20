@@ -1,7 +1,5 @@
 # Stage 210: Model Serving Foundation
 
-## Why
-
 Installing an AI operator is not the same as having a production inference
 platform. Models need authenticated endpoints, TLS termination, gateway-level
 routing, rate limiting, and observability before they can serve real workloads.
@@ -14,7 +12,7 @@ OpenShift AI uses for Kubernetes-native LLM serving, extended with Gateway API
 for unified ingress and Red Hat Connectivity Link (Kuadrant) for
 gateway-enforced authentication and rate limiting.
 
-## What
+## Building Blocks
 
 - **KServe** model serving platform enabled via DataScienceCluster activation
   hook — provides the `LLMInferenceService` CRD for declarative model

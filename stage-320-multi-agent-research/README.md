@@ -1,7 +1,5 @@
 # Stage 320: Multi-Agent Research
 
-## Why
-
 Enterprise AI is progressing from single-model chatbots through
 retrieval-augmented generation to multi-agent systems where specialized models
 collaborate on complex tasks. This stage is the demo's destination — an AI-Q
@@ -16,7 +14,7 @@ every governance layer works end to end: GitOps-managed infrastructure, GPU
 scheduling, model serving, gateway authentication, and consumption metering —
 all visible and auditable from a single platform.
 
-## What
+## Building Blocks
 
 - **AI-Q Backend** — NVIDIA AI-Q Blueprint (NeMo Agent Toolkit) research
   service with three workflow modes:

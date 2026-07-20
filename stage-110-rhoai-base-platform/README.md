@@ -1,7 +1,5 @@
 # Stage 110: RHOAI Base Platform
 
-## Why
-
 Every enterprise AI platform needs a governed, repeatable foundation before
 models can be served and agents can run. GitOps ensures that platform state is
 declarative, auditable, and recoverable — so the AI platform behaves like
@@ -10,7 +8,7 @@ managed AI/ML platform layer on top of OpenShift, unifying model serving,
 workbench management, hardware acceleration, and governed model access under
 a single operator-managed lifecycle.
 
-## What
+## Building Blocks
 
 - **OpenShift GitOps** (ArgoCD) bootstrap for declarative platform management
 - **OpenShift Data Foundation** MCG for S3-compatible object storage
@@ -42,7 +40,7 @@ annotation`), the `rhoai-nvidia-demo` AppProject, and the controller
 cluster-admin binding. Everything else is delivered by the ArgoCD Application
 syncing `gitops/stage-110-rhoai-base-platform/` from Git.
 
-## What It Looks Like
+## Demo Walkthrough
 
 Once deployed, the stage delivers a healthy GitOps-managed foundation with all
 operators reconciled and instance CRs ready.

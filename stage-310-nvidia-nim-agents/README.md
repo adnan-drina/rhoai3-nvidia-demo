@@ -1,7 +1,5 @@
 # Stage 310: NVIDIA NIM Agents
 
-## Why
-
 Multi-agent research workflows need frontier models for orchestration,
 reasoning, and summarization. The
 [Red Hat AI Factory with NVIDIA](https://www.redhat.com/en/products/ai/factory-with-nvidia)
@@ -16,7 +14,7 @@ deployment pattern: teams can start building agents immediately against hosted
 endpoints, then move inference onto private infrastructure when GPU capacity
 arrives — without changing a single line of application code.
 
-## What
+## Building Blocks
 
 - **Hosted NVIDIA models** registered as `ExternalModel` resources through the
   MaaS gateway — `gpt-oss-120b`, `nemotron-super-120b`, `nemotron-nano-30b`,

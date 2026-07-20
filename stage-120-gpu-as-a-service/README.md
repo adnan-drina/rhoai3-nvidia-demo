@@ -1,7 +1,5 @@
 # Stage 120: GPU as a Service
 
-## Why
-
 Accelerator capacity is scarce and expensive. Without platform-level governance,
 GPU allocation becomes an unmanaged, first-come-first-served race that leaves
 some teams idle and others starved. GPU-as-a-Service exposes accelerator
@@ -14,7 +12,7 @@ Combined with Kueue quota management and RHOAI hardware profiles, this stage
 turns raw GPU hardware into a self-service accelerator platform where workloads
 request the GPU tier they need and the scheduler enforces fair sharing.
 
-## What
+## Building Blocks
 
 - **GPU worker MachineSets** — two `p5.4xlarge` nodes (`gpu-full` and `gpu-mig`)
   with per-node labels for MIG configuration selection
@@ -59,7 +57,7 @@ ClusterPolicy, Kueue operator + CR, ClusterQueue, LocalQueue, and the four
 hardware profiles — is delivered by the ArgoCD Application syncing
 `gitops/stage-120-gpu-as-a-service/`.
 
-## What It Looks Like
+## Demo Walkthrough
 
 Once deployed, the stage adds GPU-as-a-Service capabilities on top of the
 stage-110 foundation. GPU-dependent features (driver installation, MIG

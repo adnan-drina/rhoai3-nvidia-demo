@@ -1,7 +1,5 @@
 # Stage 220: Models as a Service
 
-## Why
-
 Deploying a model is not the same as running a governed AI service. Without a
 governance layer, teams create direct connections to individual model endpoints,
 credentials scatter across namespaces, and usage becomes invisible — the
@@ -15,7 +13,7 @@ When a new model is added or a backend swaps from hosted to local inference, no
 consumer configuration changes — MaaS governs what is available, who can use it,
 and how much they can consume.
 
-## What
+## Building Blocks
 
 - **MaaS API** activated via DataScienceCluster, providing the Gen AI Studio
   interface in the RHOAI Dashboard for API key management, model browsing, and
